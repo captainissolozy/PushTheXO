@@ -3,7 +3,7 @@ import { Box, TextField } from "@mui/material";
 import BasicButtons from "./Button";
 import FormWrapper from "./FormWrapper";
 
-const BasicTextFields = () => {
+const BasicTextFields = (setPassword, setEmail, handleAction) => {
   return (
     <FormWrapper>
       <div className="box">
@@ -28,6 +28,7 @@ const BasicTextFields = () => {
                     id="username"
                     label="Enter the username"
                     variant="outlined"
+                    onChange={e => setEmail(e.target.value)}
                   />
 
                   <TextField
@@ -35,9 +36,10 @@ const BasicTextFields = () => {
                     id="password"
                     label="Enter the Password"
                     variant="outlined"
+                    onChange={e => setPassword(e.target.value)}
                   />
                 </Box>
-                <BasicButtons />
+                <BasicButtons title="Login" handleAction={handleAction}/>
               </div>
             </div>
           </div>

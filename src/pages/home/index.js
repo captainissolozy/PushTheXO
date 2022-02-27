@@ -8,8 +8,8 @@ const Home = () => {
       path: "/login"
     },
     {
-      txt: "Sign-in",
-      path: "/signin"
+      txt: "Sign-up",
+      path: "/regis"
     },
     {
       txt: "Guest",

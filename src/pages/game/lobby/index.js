@@ -5,7 +5,7 @@ const Lobby = () => {
   return (
     <LobbyWrapper>
       <div className="wrapper-box">
-        <BasicButtons />
+        <BasicButtons title="Play"/>
       </div>
     </LobbyWrapper>
   );
