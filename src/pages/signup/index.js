@@ -1,5 +1,5 @@
 import BasicTextFieldsRegis from "../../components/common/RegisForm";
-
+import { app } from "../../config/firebase-config";
 import {
     getAuth,
     createUserWithEmailAndPassword
@@ -16,7 +16,6 @@ const RegisPage = () => {
         createUserWithEmailAndPassword(authentication, email, password).then(
             (response) => {
                 sessionStorage.setItem('Auth Token', response._tokenResponse.refreshToken)
-
                 console.log(response);
             }
         );

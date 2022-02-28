@@ -1,4 +1,5 @@
 import BasicTextFields from "../../components/common/Form";
+import { app } from "../../config/firebase-config";
 import {useState} from "react";
 
 import {signInWithEmailAndPassword, getAuth} from "firebase/auth";
@@ -8,12 +9,11 @@ const LoginPage = () => {
     const [password, setPassword] = useState("");
 
     const handleAction = (id) => {
-        console.log(id);
         const authentication = getAuth();
         signInWithEmailAndPassword(authentication, email, password).then(
             (response) => {
                 sessionStorage.setItem('Auth Token', response._tokenResponse.refreshToken)
-                console.log(response);
+                console.log(id);
             }
         );
     }
