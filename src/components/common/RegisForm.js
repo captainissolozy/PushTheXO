@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Box, TextField, Button } from "@mui/material";
-
+import {MdOutlineArrowBackIos} from 'react-icons/md'
 import FormWrapper from "./FormWrapper";
 import { Link } from "react-router-dom";
 
@@ -12,7 +12,12 @@ const BasicTextFieldsRegis = (setPassword, setEmail, handleAction) => {
   return (
     <FormWrapper>
       <div className="box">
-      <form className="regis-b c-box border border-primary p-4 rounded-2" onSubmit={handleSubmit}>
+      <form className="regis-b c-box border border-primary p-4 rounded-2 w-100" onSubmit={handleSubmit}>
+      <div>
+            <Link to={"/home"} className="font px-4 mx-3 text-decoration-none">
+            <MdOutlineArrowBackIos />
+            </Link>
+          </div> 
       <div className="heading-container mt-2 d-flex flex-row-reverse justify-content-center">
                 <h3>Sign up</h3>
               </div>
@@ -30,13 +35,9 @@ const BasicTextFieldsRegis = (setPassword, setEmail, handleAction) => {
           required
           onChange={(e) => setPassword(e.target.value)}
         />
-        <div>
+        <div className="pt-2">
           
           
-            <Link to={"/home"} className="font border border-primary px-4 pb-2 mx-3">
-            back
-            </Link>
-            
           
           <Button type="submit" variant="contained" color="primary" className="mx-3">
             Signup

@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 const HomeWrapper = styled.div`
   .box {
-    height: calc(100% - 56px);
+    height: calc(100vh - 56px);
   }
   .c-box {
     position: absolute;
