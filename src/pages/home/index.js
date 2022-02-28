@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import HomeWrapper from "./HomeWrapper";
 
+
 const Home = () => {
   const btnArray = [
     {

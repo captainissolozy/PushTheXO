@@ -1,51 +1,49 @@
 import * as React from "react";
-import { Box, TextField } from "@mui/material";
-import BasicButtons from "./Button";
+import {Box, Button, TextField} from "@mui/material";
+import {MdOutlineArrowBackIos} from 'react-icons/md'
 import FormWrapper from "./FormWrapper";
+import {Link} from "react-router-dom";
 
-const BasicTextFields = (setPassword, setEmail, handleAction) => {
+
+
+const BasicTextFields = ({setPassword, setEmail, handleAction}) => {
   return (
-    <FormWrapper>
-      <div className="box">
-        <div className="container my-3 justify-content-center d-flex c-box">
-          <div className="row my-3 border border-primary w-100">
-            <div className="col">
-              <div className="heading-container mt-3 d-flex justify-content-center">
-                <h3>Login</h3>
-              </div>
-              <div className="d-flex flex-column justify-content-center py-3">
-                <Box
-                  className="pb-3"
-                  component="form"
-                  sx={{
-                    "& > :not(style)": { m: 1, width: "25ch" }
-                  }}
-                  noValidate
-                  autoComplete="off"
-                >
-                  <TextField
-                    className="pb-2"
-                    id="username"
-                    label="Enter the username"
-                    variant="outlined"
-                    onChange={e => setEmail(e.target.value)}
-                  />
-
-                  <TextField
-                    className="pb-3"
-                    id="password"
-                    label="Enter the Password"
-                    variant="outlined"
-                    onChange={e => setPassword(e.target.value)}
-                  />
-                </Box>
-                <BasicButtons title="Login" handleAction={handleAction}/>
-              </div>
+      <FormWrapper>
+        <div className="box">
+          <form className="regis-b c-box border border-primary p-4 rounded-2 w-100">
+            <div>
+              <Link to={"/home"} className="font px-4 mx-3 text-decoration-none">
+                <MdOutlineArrowBackIos/>
+              </Link>
             </div>
-          </div>
+            <div className="heading-container mt-2 d-flex flex-row-reverse justify-content-center">
+              <h3>Login</h3>
+            </div>
+            <TextField className="my-3"
+                       label="Email"
+                       variant="filled"
+                       type="email"
+                       required
+                       onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField className="my-3 mb-4"
+                       label="Password"
+                       variant="filled"
+                       type="password"
+                       required
+                       onChange={(e) => setPassword(e.target.value)}
+            />
+            <div className="pt-2">
+
+
+              <Button type="submit" variant="contained" color="primary" className="mx-3"
+                      onClick={handleAction}>
+                Login
+              </Button>
+            </div>
+          </form>
         </div>
-      </div>
-    </FormWrapper>
+      </FormWrapper>
   );
 };
 export default BasicTextFields;

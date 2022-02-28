@@ -1,10 +1,32 @@
 import BasicTextFieldsRegis from "../../components/common/RegisForm";
 
+import {
+    getAuth,
+    createUserWithEmailAndPassword
+} from "firebase/auth";
+import {useState} from "react";
 
-function RegisPage(){
+const RegisPage = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const handleAction = (id) => {
+        console.log(id);
+        const authentication = getAuth();
+        createUserWithEmailAndPassword(authentication, email, password).then(
+            (response) => {
+                sessionStorage.setItem('Auth Token', response._tokenResponse.refreshToken)
+
+                console.log(response);
+            }
+        );
+    }
+
     return (
         <div>
-            <BasicTextFieldsRegis />
+            <BasicTextFieldsRegis setEmail={setEmail}
+                                  setPassword={setPassword}
+                                  handleAction={() => handleAction(2)}/>
         </div>
     )
 }
