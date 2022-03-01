@@ -14,7 +14,7 @@ const Navbar = () => {
           Push, The XO
         </Link>
         <Link to={"/home"} className="navbar-brand text-white">
-          Home
+          Login
         </Link>
       </div>
     </nav>

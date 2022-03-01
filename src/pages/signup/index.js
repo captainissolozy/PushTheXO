@@ -1,14 +1,20 @@
 import BasicTextFieldsRegis from "../../components/common/RegisForm";
-import { app } from "../../config/firebase-config";
+import {app} from "../../config/firebase-config";
 import {
     getAuth,
     createUserWithEmailAndPassword
 } from "firebase/auth";
 import {useState} from "react";
+import Lobby from "../game/lobby";
+import {useNavigate} from "react-router-dom";
 
 const RegisPage = () => {
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    const navigate = (useNavigate());
+
 
     const handleAction = (id) => {
         console.log(id);
@@ -16,6 +22,7 @@ const RegisPage = () => {
         createUserWithEmailAndPassword(authentication, email, password).then(
             (response) => {
                 sessionStorage.setItem('Auth Token', response._tokenResponse.refreshToken)
+                navigate("/lobby");
                 console.log(response);
             }
         );

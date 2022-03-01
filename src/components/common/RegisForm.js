@@ -5,11 +5,15 @@ import FormWrapper from "./FormWrapper";
 import {Link} from "react-router-dom";
 
 const BasicTextFieldsRegis = ({setPassword, setEmail, handleAction}) => {
+    const handleSubmit = e => {
+        e.preventDefault();
+
+    };
 
     return (
         <FormWrapper>
             <div className="box">
-                <form className="regis-b c-box border border-primary p-4 rounded-2 w-100" >
+                <form className="regis-b c-box border border-primary p-4 rounded-2 w-100" onSubmit={handleSubmit}>
                     <div>
                         <Link to={"/home"} className="font px-4 mx-3 text-decoration-none">
                             <MdOutlineArrowBackIos/>
