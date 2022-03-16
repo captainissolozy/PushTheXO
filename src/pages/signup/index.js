@@ -5,34 +5,40 @@ import {
     createUserWithEmailAndPassword
 } from "firebase/auth";
 import {useState} from "react";
-import Lobby from "../game/lobby";
 import {useNavigate} from "react-router-dom";
+import {toast, ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import navbar from "../../components/navbar";
 
 const RegisPage = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
     const navigate = (useNavigate());
 
 
-    const handleAction = (id) => {
-        console.log(id);
+    const handleAction = () => {
         const authentication = getAuth();
         createUserWithEmailAndPassword(authentication, email, password).then(
             (response) => {
-                sessionStorage.setItem('Auth Token', response._tokenResponse.refreshToken)
+                sessionStorage.setItem('User', JSON.stringify(response.user))
                 navigate("/lobby");
                 console.log(response);
+
             }
-        );
+        ).catch((error) => {
+            if(error.code === 'auth/email-already-in-use'){
+                toast.error('Email Already in Use');
+            }
+        });
     }
 
     return (
         <div>
             <BasicTextFieldsRegis setEmail={setEmail}
                                   setPassword={setPassword}
-                                  handleAction={() => handleAction(2)}/>
+                                  handleAction={() => handleAction()}/>
+            <ToastContainer />
         </div>
     )
 }
