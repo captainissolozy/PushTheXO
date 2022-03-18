@@ -44,7 +44,7 @@ export default function Lobby(){
 
             </div>
           <div className="row mt-3">
-            <div className="col-7 pl-0">
+            <div className="col-7 p-0">
             <SearchBar />
             </div>
             <div className="col-4 d-flex justify-content-center">
