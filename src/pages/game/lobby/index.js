@@ -22,7 +22,7 @@ export default function Lobby(){
         <div className="wrapper-box">
           <div className="container pt-5">
             <div className="row mt-2">
-              <div className="col-7 t-tab border border-black">
+              <div className="col-12 t-tab border border-black">
                 <table className="table">
                   <thead>
                   <tr>
@@ -33,23 +33,17 @@ export default function Lobby(){
                   </thead>
                 </table>
               </div>
-              <div className="col-4">
-                <div className="row">
-
-                </div>
-                <div className="row">
-
-                </div>
-              </div>
-
             </div>
-          <div className="row mt-3">
-            <div className="col-7 p-0">
+          <div className="row mt-3 d-flex justify-content-center">
+            <div className="col-6 p-0">
             <SearchBar />
             </div>
-            <div className="col-4 d-flex justify-content-center">
-            <BasicButtons title={'Search'}/>
+            <div className="col-2 d-flex justify-content-center m-1">
+              <BasicButtons title={'Search'} onClick={'search'}/>
             </div>
+              <div className="col-2 d-flex justify-content-center m-1">
+                <BasicButtons title={'Create Room'} onClick={'createLobby'}/>
+              </div>
           </div>
           </div>
         </div>

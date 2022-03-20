@@ -1,4 +1,3 @@
-
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from "./components/navbar";
@@ -11,31 +10,26 @@ import RegisPage from "./pages/signup";
 
 function App() {
 
-    return (
-        <>
+    return (<>
             <BrowserRouter>
                 <Navbar/>
                 <Routes>
                     <Route path="/home" element={<Home/>}/>
                     <Route
                         path="/login"
-                        element={
-                            <LoginPage
-                            />
-                        }
+                        element={<LoginPage
+                        />}
                     />
                     <Route
                         path="/regis"
-                        element={
-                            <RegisPage
-                            />
-                        }
+                        element={<RegisPage
+                        />}
                     />
                     <Route path="/lobby" element={<Lobby/>}/>
+                    <Route path="/game" element={<Lobby/>}/>
                 </Routes>
             </BrowserRouter>
-        </>
-    );
+        </>);
 }
 
 export default App;
