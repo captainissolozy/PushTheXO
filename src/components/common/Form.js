@@ -1,15 +1,13 @@
 import * as React from "react";
 import {Box, Button, TextField} from "@mui/material";
-import {MdOutlineArrowBackIos} from 'react-icons/md'
+import {MdOutlineArrowBackIos} from 'react-icons/md';
 import FormWrapper from "./FormWrapper";
 import {Link} from "react-router-dom";
 
-
-
 const BasicTextFields = ({setPassword, setEmail, handleAction}) => {
+
   const handleSubmit = e => {
     e.preventDefault();
-
   };
 
   return (
