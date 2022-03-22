@@ -8,7 +8,7 @@ const FormWrapper = styled.div`
     align-items: center;
   }
   .box {
-    height: calc(100vh - 56px);
+    height: calc(100vh - 62.5px);
     z-index: -10;
   }
   .c-box {

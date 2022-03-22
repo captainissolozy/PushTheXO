@@ -6,6 +6,7 @@ import {BrowserRouter, Routes, Route, useNavigate} from "react-router-dom";
 import Lobby from "./pages/game/lobby";
 import LoginPage from "./pages/login";
 import RegisPage from "./pages/signup";
+import Board from "./pages/game/gamePlay/Board";
 
 
 function App() {
@@ -26,7 +27,7 @@ function App() {
                         />}
                     />
                     <Route path="/lobby" element={<Lobby/>}/>
-                    <Route path="/game" element={<Lobby/>}/>
+                    <Route path="/game" element={<Board/>}/>
                 </Routes>
             </BrowserRouter>
         </>);
