@@ -21,9 +21,9 @@ const RegisPage = () => {
         const authentication = getAuth();
         createUserWithEmailAndPassword(authentication, email, password).then(
             (response) => {
+                sessionStorage.setItem('email', response.user.email)
                 sessionStorage.setItem('User', JSON.stringify(response.user))
                 navigate("/lobby");
-                console.log(response);
 
             }
         ).catch((error) => {

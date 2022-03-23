@@ -8,12 +8,22 @@ import BasicButtons from "../../../components/common/Button";
 import {Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField} from "@mui/material";
 import Modal from "@material-ui/core/Modal";
 import * as React from "react";
+import dataService from "../../../FirebaseDB/DataService";
 
 
 export default function Lobby(){
-  const navigate = useNavigate();
+
+  const initialFormData = Object.freeze({
+    email: sessionStorage.getItem('email'),
+    title: "",
+    privateKey: "",
+    winCon: 0,
+    timeLimit: 0
+  });
+  const navigate = useNavigate()
   const {user} = useUserContext()
   const [open, setOpen] = useState(false)
+  const [formData, updateFormData] = useState(initialFormData)
 
   useEffect(() =>{
     if (!user){
@@ -27,6 +37,22 @@ export default function Lobby(){
   const handleClose = () => {
     setOpen(false)
   }
+  const handleChange = (e) => {
+    updateFormData({
+      ...formData,
+      [e.target.name]: e.target.value.trim()
+    })
+  }
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    console.log(formData)
+    // dataService.create(formData).then(() =>{
+    //   updateFormData(initialFormData);
+    // }).catch(e =>{
+    //   console.log(e)
+    // });
+    // console.log(formData);
+  };
 
   return (
       <LobbyWrapper>
@@ -69,23 +95,33 @@ export default function Lobby(){
               <h3>Create-Lobby</h3>
             </div>
             <TextField className="my-3"
+                       label="email"
+                       disabled={true}
+                       value={sessionStorage.getItem('email')}
+                       onChange={handleChange}
+            />
+            <TextField className="my-3"
                        label="Title"
+                       name="title"
                        variant="filled"
                        type="text"
                        required
+                       onChange={handleChange}
             />
             <TextField className="my-3 mb-4"
                        label="PrivateKey"
+                       name="privateKey"
                        variant="filled"
                        type="text"
                        required
+                       onChange={handleChange}
             />
             <FormControl>
               <FormLabel id="demo-radio-buttons-group-label">Win-condition</FormLabel>
               <RadioGroup
                   aria-labelledby="demo-radio-buttons-group-label"
-                  defaultValue="2"
-                  name="radio-buttons-group"
+                  name="winCon"
+                  onChange={handleChange}
               >
                 <FormControlLabel value="2" control={<Radio/>} label="Best of 2"/>
                 <FormControlLabel value="3" control={<Radio/>} label="Best of 3"/>
@@ -95,8 +131,9 @@ export default function Lobby(){
               <FormLabel id="demo-radio-buttons-group-label">Time Limit</FormLabel>
               <RadioGroup
                   aria-labelledby="demo-radio-buttons-group-label"
-                  defaultValue="10"
-                  name="radio-buttons-group"
+                  name="timeLimit"
+                  required
+                  onChange={handleChange}
               >
                 <FormControlLabel value="10" control={<Radio/>} label="10 minute"/>
                 <FormControlLabel value="1000" control={<Radio/>} label="No time limit"/>
@@ -111,7 +148,7 @@ export default function Lobby(){
                 </Button>
 
                 <Button type="submit" variant="contained" color="primary" className="mx-3"
-                        onClick={handleCreate}>
+                        onClick={handleSubmit}>
                   Create
                 </Button>
               </div>

@@ -1,8 +1,11 @@
 import styled from "styled-components";
 
 const HomeWrapper = styled.div`
+  html{
+    overflow: hidden;
+  }
   .box {
-    height: calc(100vh - 56px);
+    height: calc(100vh - 62.5px);
   }
   .c-box {
     position: absolute;

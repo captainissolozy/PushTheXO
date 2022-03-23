@@ -18,6 +18,7 @@ const LoginPage = () => {
         const authentication = getAuth();
         signInWithEmailAndPassword(authentication, email, password).then(
             (response) => {
+                sessionStorage.setItem('email', response.user.email)
                 sessionStorage.setItem('User', JSON.stringify(response.user))
                 setUser(response.user)
                 navigate("/lobby");
