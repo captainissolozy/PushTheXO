@@ -8,7 +8,10 @@ import BasicButtons from "../../../components/common/Button";
 import {Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField} from "@mui/material";
 import Modal from "@material-ui/core/Modal";
 import * as React from "react";
-import dataService from "../../../FirebaseDB/DataService";
+import db from "../../../config/firebase-config"
+import { setDoc, doc } from "firebase/firestore"
+import { v4 as uuid } from 'uuid';
+
 
 
 export default function Lobby(){
@@ -16,7 +19,6 @@ export default function Lobby(){
   const initialFormData = Object.freeze({
     email: sessionStorage.getItem('email'),
     title: "",
-    privateKey: "",
     winCon: 0,
     timeLimit: 0
   });
@@ -24,6 +26,7 @@ export default function Lobby(){
   const {user} = useUserContext()
   const [open, setOpen] = useState(false)
   const [formData, updateFormData] = useState(initialFormData)
+  const [pKey, generatePKey] = useState("")
 
   useEffect(() =>{
     if (!user){
@@ -31,8 +34,13 @@ export default function Lobby(){
     }
   },[navigate, user])
 
+  const generateKey = function(){
+    const unique_id = uuid();
+    return unique_id.slice(0,8);
+  }
   const handleCreate = () => {
     setOpen(true)
+    generatePKey(generateKey)
   }
   const handleClose = () => {
     setOpen(false)
@@ -43,15 +51,13 @@ export default function Lobby(){
       [e.target.name]: e.target.value.trim()
     })
   }
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
+
     e.preventDefault()
+    const docRef = doc(db, "User", pKey);
+    await setDoc(docRef, formData);
     console.log(formData)
-    // dataService.create(formData).then(() =>{
-    //   updateFormData(initialFormData);
-    // }).catch(e =>{
-    //   console.log(e)
-    // });
-    // console.log(formData);
   };
 
   return (
@@ -76,7 +82,7 @@ export default function Lobby(){
             <SearchBar />
             </div>
             <div className="col-2 d-flex justify-content-center m-1">
-              <BasicButtons title={'Search'} onClick={'search'}/>
+              <BasicButtons title={'Join'} onClick={'search'}/>
             </div>
               <div className="col-2 d-flex justify-content-center m-1" onClick={handleCreate}>
                 <BasicButtons title={'Create Room'}/>
@@ -103,14 +109,6 @@ export default function Lobby(){
             <TextField className="my-3"
                        label="Title"
                        name="title"
-                       variant="filled"
-                       type="text"
-                       required
-                       onChange={handleChange}
-            />
-            <TextField className="my-3 mb-4"
-                       label="PrivateKey"
-                       name="privateKey"
                        variant="filled"
                        type="text"
                        required

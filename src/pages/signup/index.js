@@ -1,14 +1,14 @@
 import BasicTextFieldsRegis from "../../components/common/RegisForm";
-import {app} from "../../config/firebase-config";
+
 import {
     getAuth,
     createUserWithEmailAndPassword
 } from "firebase/auth";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import navbar from "../../components/navbar";
+
 
 const RegisPage = () => {
 

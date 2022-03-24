@@ -1,6 +1,5 @@
 import BasicTextFields from "../../components/common/Form";
-import { app } from "../../config/firebase-config";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import  { useNavigate} from "react-router-dom";
 import {signInWithEmailAndPassword, getAuth} from "firebase/auth";
 import {toast, ToastContainer} from "react-toastify";
@@ -13,6 +12,7 @@ const LoginPage = () => {
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const {user, setUser} = useUserContext()
+
 
     const handleAction = () => {
         const authentication = getAuth();
