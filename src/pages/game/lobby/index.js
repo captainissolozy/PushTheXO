@@ -11,6 +11,7 @@ import * as React from "react";
 import db from "../../../config/firebase-config"
 import { setDoc, doc } from "firebase/firestore"
 import { v4 as uuid } from 'uuid';
+import AddTable from "./AddTable";
 
 
 
@@ -20,7 +21,9 @@ export default function Lobby(){
     email: sessionStorage.getItem('email'),
     title: "",
     winCon: 0,
-    timeLimit: 0
+    timeLimit: 0,
+    gameState: true,
+    turn: 0
   });
   const navigate = useNavigate()
   const {user} = useUserContext()
@@ -53,11 +56,10 @@ export default function Lobby(){
   }
 
   const handleSubmit = async (e) => {
-
     e.preventDefault()
     const docRef = doc(db, "User", pKey);
     await setDoc(docRef, formData);
-    console.log(formData)
+    navigate('/game')
   };
 
   return (
@@ -69,11 +71,13 @@ export default function Lobby(){
                 <table className="table">
                   <thead>
                   <tr>
-                    <th scope="col" className="t-stick">#</th>
+                    <th scope="col" className="t-stick">Best of</th>
                     <th scope="col" className="t-stick">Rooms</th>
                     <th scope="col" className="t-stick">Owner</th>
+                    <th scope="col" className="t-stick">Time-Limit</th>
                   </tr>
                   </thead>
+                  <AddTable />
                 </table>
               </div>
             </div>
@@ -134,7 +138,7 @@ export default function Lobby(){
                   onChange={handleChange}
               >
                 <FormControlLabel value="10" control={<Radio/>} label="10 minute"/>
-                <FormControlLabel value="1000" control={<Radio/>} label="No time limit"/>
+                <FormControlLabel value="no" control={<Radio/>} label="No time limit"/>
               </RadioGroup>
             </FormControl>
 
