@@ -11,7 +11,7 @@ const LobbyWrapper = styled.div`
 
 .t-stick{
     position: sticky; top: 0;
-
+    border-top: white;
 }
 
 `

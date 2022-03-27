@@ -5,7 +5,7 @@ import { onSnapshot, collection } from "firebase/firestore"
 const AddTable = () => {
 
     const [formData, setFormData] = useState([])
-    console.log(formData)
+
 
     useEffect(() => {
         onSnapshot(collection(db, "User"), (snapshot) =>{
@@ -18,10 +18,10 @@ const AddTable = () => {
             formData.map((data) => (
                 <tbody>
                     <tr>
-                        <td>{data.winCon}</td>
-                        <td>{data.title}</td>
-                        <td>{data.email}</td>
-                        <td>{data.timeLimit}</td>
+                        <td >{data.winCon}</td>
+                        <td >{data.title}</td>
+                        <td >{data.email}</td>
+                        <td >{data.timeLimit}</td>
                     </tr>
                 </tbody>
             ))

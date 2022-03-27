@@ -1,9 +1,17 @@
 import styled from "styled-components";
 
 const GamePlayWrapper = styled.div`
-
-  .box {
-    height: calc(100vh - 62.5px);
-  }
+.game-container{
+  display: grid;
+  grid-template: repeat(15, 1fr) / repeat(15, 1fr);
+  height: 700px;
+  width: 700px;
+  border: black 1px solid;
+  margin: 0;
+  padding: 0;
+}
+.xo{
+  border: 1px solid black;
+}
 `
 export default GamePlayWrapper
