@@ -12,6 +12,7 @@ const GamePlayWrapper = styled.div`
 }
 .xo{
   border: 1px solid black;
+  cursor: pointer;
 }
 `
 export default GamePlayWrapper
