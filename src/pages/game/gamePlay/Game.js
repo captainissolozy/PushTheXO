@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import GamePlayWrapper from "./GamePlayWrapper";
-import { onSnapshot, doc, getDoc, updateDoc } from "firebase/firestore";
+import {onSnapshot, doc, getDoc, updateDoc} from "firebase/firestore";
 import db from "../../../config/firebase-config";
 import {Button} from "@mui/material";
 import {useNavigate} from "react-router-dom";
@@ -10,9 +10,8 @@ const Game = () => {
 
     const [gameData, setGameData] = useState({});
     const [disable, setDisable] = useState(false);
-    const [playerDataX, setPlayerDataX] = useState("Waiting for Player")
-    const [playerDataY, setPlayerDataY] = useState("Waiting for Player")
     const gameKey = sessionStorage.getItem('gameKey')
+    const [turn, setTurn] = useState('Waiting')
     const navigate = useNavigate();
     const docRef = doc(db, 'Game', gameKey)
 
@@ -28,8 +27,23 @@ const Game = () => {
     };
 
     const handleXO = async (el) => {
-        console.log(el.target.id)
-        await updateDoc(docRef, {[el.target.id]: 1})
+        if (gameData.gameState == true) {
+            if (gameData.turn % 2 == 0 && sessionStorage.getItem('email') === gameData.playerX) {
+                if (gameData[el.target.id] === ""){
+                console.log(el.target.id)
+                await updateDoc(docRef, {[el.target.id]: "X"})
+                await updateDoc(docRef, {turn: gameData.turn+1})
+                }
+            }
+            if (gameData.turn % 2 == 1 && sessionStorage.getItem('email') === gameData.playerY) {
+                if (gameData[el.target.id] === ""){
+                console.log(el.target.id)
+                await updateDoc(docRef, {[el.target.id]: "O"})
+                await updateDoc(docRef, {turn: gameData.turn+1});
+                console.log(gameData[el.target.id])
+                }
+            }
+        }
     }
 
     const joinX = async (el) => {
@@ -57,29 +71,40 @@ const Game = () => {
     }
 
     const handleReset = async () => {
-
         const initialBoard = Object.keys(gameData).filter((key) => {
             if (!isNaN(key)) {
                 return true
             } else return false
 
         })
-        await updateDoc(docRef, Object.fromEntries(initialBoard.map((key) => [key, 0])))
-        await updateDoc(docRef, {gameState: true, playerX: "", playerY: "", turn: 0,})
+        await updateDoc(docRef, Object.fromEntries(initialBoard.map((key) => [key, ''])))
+        await updateDoc(docRef, {gameState: false, playerX: "", playerY: "", turn: 0,})
         setDisable(false)
 
     }
+
+    const handleStart = () => {
+        if (gameData.playerY && gameData.playerY != "") {
+            updateDoc(docRef, {gameState: true})
+            toast.success('Game Start');
+        } else {
+            toast.error('Please Choose Your role first');
+        }
+
+    }
+
     useEffect(() => {
         onSnapshot(doc(db, "Game", gameKey), (snapshot) => {
             setGameData(snapshot.data())
         });
+        console.log('useEffect')
     }, [])
 
     if (Object.keys(gameData).length === 0) return null
     return (
         <GamePlayWrapper>
             <h2 className="text-center mb-4 p-2">Room Key : {gameKey}</h2>
-            <h2 className="text-center m-4">Turn : </h2>
+            <h2 className="text-center m-4">Turn : {turn}</h2>
             <div className="container">
                 <div className="row justify-content-center">
 
@@ -89,14 +114,19 @@ const Game = () => {
                     </div>
                     <div className="col-3">
                         <Button disabled={disable} variant="contained" className="w-100 mb-3" onClick={joinY}>JOIN AS
-                            Player: Y</Button>
+                            Player: O</Button>
                     </div>
                 </div>
             </div>
             <div className="container-fluid">
                 <div className="row justify-content-center">
+                    <div className="col-2">
+                        <h2 className="text-center">PlayerX</h2>
+                        <p className="text-center mt-3">{gameData.playerX}</p>
+                        <p className="text-center mt-3">Time limit:</p>
+                    </div>
 
-                    <div className="col-5 d-flex justify-content-center">
+                    <div className="col-6 d-flex justify-content-center">
                         <div>
                             <div className="game-container">
                                 {
@@ -107,15 +137,19 @@ const Game = () => {
                     </div>
 
                     <div className="col-2">
-                        <h2 className="text-center">PlayerX</h2>
-                        <p className="text-center mt-3">{playerDataX}</p>
                         <h2 className="text-center">PlayerO</h2>
-                        <p className="text-center mt-3">{playerDataY}</p>
+                        <p className="text-center mt-3">{gameData.playerY}</p>
+                        <p className="text-center mt-3">Time limit:</p>
                     </div>
                 </div>
             </div>
             <div>
+                <Button variant="contained">IronXO</Button>
+                <Button variant="contained">Bomb</Button>
+            </div>
+            <div>
                 <Button variant="contained" onClick={handleReset}>Reset</Button>
+                <Button variant="contained" onClick={handleStart}>Start</Button>
             </div>
             <ToastContainer/>
         </GamePlayWrapper>
