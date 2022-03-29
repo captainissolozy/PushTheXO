@@ -19,16 +19,18 @@ export default function Lobby() {
     const initialFormData = Object.freeze({
         email: sessionStorage.getItem('email'),
         title: "",
-        winCon: 0,
         timeLimit: 0,
         gameState: true,
         turn: 0
     });
-    const  initialGameData = Object.freeze({
+    const initialGameData = Object.freeze({
+        winX: 0,
+        winY: 0,
+        winCon: 0,
         playerX: "",
         playerY: "",
         gameState: false,
-        turn:0,
+        turn: 0,
         1: '',
         2: '',
         3: '',
@@ -260,7 +262,7 @@ export default function Lobby() {
     const {user} = useUserContext()
     const [open, setOpen] = useState(false)
     const [formData, updateFormData] = useState(initialFormData)
-    const gameData = initialGameData
+    const [gameData, upDateGameData] = useState(initialGameData)
     const [pKey, generatePKey] = useState("")
     const [searchKey, setSearchKey] = useState('')
 
@@ -286,6 +288,12 @@ export default function Lobby() {
             ...formData,
             [e.target.name]: e.target.value.trim()
         })
+        if (e.target.name === "winCon") {
+            upDateGameData({
+                ...gameData,
+                [e.target.name]: parseInt(e.target.value.trim())
+            })
+        }
     }
 
     const joinChange = (e) => {
@@ -379,10 +387,11 @@ export default function Lobby() {
                         <RadioGroup
                             aria-labelledby="demo-radio-buttons-group-label"
                             name="winCon"
+                            type="number"
                             onChange={handleChange}
                         >
-                            <FormControlLabel value="2" control={<Radio/>} label="Best of 2"/>
-                            <FormControlLabel value="3" control={<Radio/>} label="Best of 3"/>
+                            <FormControlLabel value={2} control={<Radio/>} label="Best of 2"/>
+                            <FormControlLabel value={3} control={<Radio/>} label="Best of 3"/>
                         </RadioGroup>
                     </FormControl>
                     <FormControl>
@@ -413,7 +422,7 @@ export default function Lobby() {
                     </div>
                 </form>
             </Modal>
-            <ToastContainer />
+            <ToastContainer/>
         </LobbyWrapper>
 
     );

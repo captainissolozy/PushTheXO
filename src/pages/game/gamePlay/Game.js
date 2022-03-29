@@ -9,11 +9,17 @@ import {toast, ToastContainer} from "react-toastify";
 const Game = () => {
 
     const [gameData, setGameData] = useState({});
-    const [disable, setDisable] = useState(false);
+    const [disableX, setDisableX] = useState(false);
+    const [disableO, setDisableO] = useState(false);
+    const [winX, setWinX] = useState(0)
+    const [winY, setWinY] = useState(0)
+    const [winCon, setWinCon] = useState(0)
     const gameKey = sessionStorage.getItem('gameKey')
     const [turn, setTurn] = useState('Waiting')
     const navigate = useNavigate();
     const docRef = doc(db, 'Game', gameKey)
+    const docRef2 = doc(db, 'User', gameKey)
+
 
     const boardGame = () => {
         const row = [];
@@ -27,29 +33,27 @@ const Game = () => {
     };
 
     const handleXO = async (el) => {
-        if (gameData.gameState == true) {
-            if (gameData.turn % 2 == 0 && sessionStorage.getItem('email') === gameData.playerX) {
-                if (gameData[el.target.id] === ""){
-                console.log(el.target.id)
-                await updateDoc(docRef, {[el.target.id]: "X"})
-                await updateDoc(docRef, {turn: gameData.turn+1})
+        if (gameData.gameState === true) {
+            if (gameData.turn % 2 === 0 && sessionStorage.getItem('email') === gameData.playerX) {
+                if (gameData[el.target.id] === "") {
+                    console.log(el.target.id)
+                    await updateDoc(docRef, {[el.target.id]: "X"})
+                    await updateDoc(docRef, {turn: gameData.turn + 1})
                 }
             }
-            if (gameData.turn % 2 == 1 && sessionStorage.getItem('email') === gameData.playerY) {
-                if (gameData[el.target.id] === ""){
-                console.log(el.target.id)
-                await updateDoc(docRef, {[el.target.id]: "O"})
-                await updateDoc(docRef, {turn: gameData.turn+1});
-                console.log(gameData[el.target.id])
+            if (gameData.turn % 2 === 1 && sessionStorage.getItem('email') === gameData.playerY) {
+                if (gameData[el.target.id] === "") {
+                    console.log(el.target.id)
+                    await updateDoc(docRef, {[el.target.id]: "O"})
+                    await updateDoc(docRef, {turn: gameData.turn + 1});
                 }
             }
         }
     }
 
-    const joinX = async (el) => {
+    const joinX = async () => {
 
         if (gameData.playerX === "") {
-            setDisable(true)
             await updateDoc(docRef, {playerX: sessionStorage.getItem('email')})
             toast.success('success')
         } else {
@@ -58,10 +62,9 @@ const Game = () => {
 
     }
 
-    const joinY = async (el) => {
+    const joinY = async () => {
 
         if (gameData.playerY === "") {
-            setDisable(true)
             await updateDoc(docRef, {playerY: sessionStorage.getItem('email')})
             toast.success('success')
         } else {
@@ -69,22 +72,30 @@ const Game = () => {
         }
 
     }
-
-    const handleReset = async () => {
+    const resetBoard = async () => {
         const initialBoard = Object.keys(gameData).filter((key) => {
-            if (!isNaN(key)) {
-                return true
-            } else return false
+            return !isNaN(key);
 
         })
         await updateDoc(docRef, Object.fromEntries(initialBoard.map((key) => [key, ''])))
-        await updateDoc(docRef, {gameState: false, playerX: "", playerY: "", turn: 0,})
-        setDisable(false)
+    }
+
+    const handleGiveUp = async () => {
+        const initialBoard = Object.keys(gameData).filter((key) => {
+            return !isNaN(key);
+
+        })
+        await updateDoc(docRef, Object.fromEntries(initialBoard.map((key) => [key, ''])))
+        if (sessionStorage.getItem('email') === gameData.playerX) {
+            await updateDoc(docRef, {turn: 0, winY: gameData.winY + 1})
+        } else if (sessionStorage.getItem('email') === gameData.playerY) {
+            await updateDoc(docRef, {turn: 0, winX: gameData.winX + 1})
+        }
 
     }
 
     const handleStart = () => {
-        if (gameData.playerY && gameData.playerY != "") {
+        if (gameData.playerX !== "" && gameData.playerY !== "") {
             updateDoc(docRef, {gameState: true})
             toast.success('Game Start');
         } else {
@@ -97,23 +108,98 @@ const Game = () => {
         onSnapshot(doc(db, "Game", gameKey), (snapshot) => {
             setGameData(snapshot.data())
         });
-        console.log('useEffect')
+
     }, [])
+
+    useEffect(() => {
+        setWinX(gameData.winX)
+        setWinY(gameData.winY)
+        if (gameData.turn % 2 === 0) {
+            setTurn('X')
+        } else if (gameData.turn % 2 === 1) {
+            setTurn('O')
+        }
+        if (gameData.gameState === true || gameData.playerY !== "") {
+            setDisableO(true)
+        }
+        if (gameData.gameState === true || gameData.playerX !== "") {
+            setDisableX(true)
+        } else if (gameData.gameState === false) {
+            setDisableX(false)
+            setDisableO(false)
+        }
+        if (gameData.gameState) {
+            for (let i = 1; i <= 225; i++) {
+                if (gameData[i] !== "") {
+                    if (gameData[i] === gameData[i + 1] && gameData[i] === gameData[i + 2]
+                        && gameData[i] === gameData[i + 3] && gameData[i] === gameData[i + 4]) {
+                        if (turn === "X") {
+                            updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
+                            resetBoard().then()
+                            toast.success('X win');
+                        } else if (turn === "O") {
+                            updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false}).then()
+                            resetBoard().then()
+                            toast.success('O win');
+                        }
+                    }
+                    if (gameData[i] === gameData[i + 16] && gameData[i] === gameData[i + 32]
+                        && gameData[i] === gameData[i + 48] && gameData[i] === gameData[i + 64]) {
+                        if (turn === "X") {
+                            updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
+                            resetBoard().then()
+                            toast.success('X win');
+                        } else if (turn === "O") {
+                            updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false}).then()
+                            resetBoard().then()
+                            toast.success('O win');
+                        }
+                    }
+                    if (gameData[i] === gameData[i + 15] && gameData[i] === gameData[i + 30]
+                        && gameData[i] === gameData[i + 45] && gameData[i] === gameData[i + 60]) {
+                        if (turn === "X") {
+                            updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
+                            resetBoard().then()
+                            toast.success('X win');
+                        } else if (turn === "O") {
+                            updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false}).then()
+                            resetBoard().then()
+                            toast.success('O win');
+                        }
+                    }
+                    if (gameData[i] === gameData[i + 14] && gameData[i] === gameData[i + 28]
+                        && gameData[i] === gameData[i + 42] && gameData[i] === gameData[i + 56]) {
+                        if (turn === "X") {
+                            updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
+                            resetBoard().then()
+                            toast.success('X win');
+                        } else if (turn === "O") {
+                            updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false}).then()
+                            resetBoard().then()
+                            toast.success('O win');
+                        }
+                    }
+                }
+            }
+        }
+
+    }, [gameData])
 
     if (Object.keys(gameData).length === 0) return null
     return (
         <GamePlayWrapper>
-            <h2 className="text-center mb-4 p-2">Room Key : {gameKey}</h2>
-            <h2 className="text-center m-4">Turn : {turn}</h2>
+            <h2 className="text-center mb-2 p-2">Room Key : {gameKey}</h2>
+            <h3 className="text-center m-4">Best of {gameData.winCon} ==> {winX} : {winY}</h3>
+            <h4 className="text-center m-2">Turn : {turn}</h4>
             <div className="container">
                 <div className="row justify-content-center">
 
                     <div className="col-3">
-                        <Button disabled={disable} variant="contained" className="w-100 mb-3" onClick={joinX}>JOIN AS
+                        <Button disabled={disableX} variant="contained" className="w-100 mb-3" onClick={joinX}>JOIN AS
                             Player: X</Button>
                     </div>
                     <div className="col-3">
-                        <Button disabled={disable} variant="contained" className="w-100 mb-3" onClick={joinY}>JOIN AS
+                        <Button disabled={disableO} variant="contained" className="w-100 mb-3" onClick={joinY}>JOIN AS
                             Player: O</Button>
                     </div>
                 </div>
@@ -143,15 +229,21 @@ const Game = () => {
                     </div>
                 </div>
             </div>
-            <div>
-                <Button variant="contained">IronXO</Button>
-                <Button variant="contained">Bomb</Button>
+            <div className="d-flex justify-content-center mt-4">
+                <Button variant="outlined" className="mx-4">IronXO</Button>
+                <Button variant="outlined" className="mx-4">Bomb</Button>
+                <Button variant="contained" color="error" className="mx-4" onClick={() => {
+                    const confirmBox = window.confirm(
+                        "Do you really want to give up?"
+                    )
+                    if (confirmBox === true) {
+                        handleGiveUp().then()
+                    }
+                }}>Give up</Button>
+                <Button variant="contained" className="mx-4" onClick={handleStart}>Start</Button>
             </div>
-            <div>
-                <Button variant="contained" onClick={handleReset}>Reset</Button>
-                <Button variant="contained" onClick={handleStart}>Start</Button>
-            </div>
-            <ToastContainer/>
+
+            <ToastContainer limit={1}/>
         </GamePlayWrapper>
     )
 }
