@@ -1,5 +1,5 @@
 import BasicTextFields from "../../components/common/Form";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import  { useNavigate} from "react-router-dom";
 import {signInWithEmailAndPassword, getAuth} from "firebase/auth";
 import {toast, ToastContainer} from "react-toastify";
