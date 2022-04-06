@@ -320,7 +320,6 @@ export default function Lobby() {
         if (docSnap.exists()) {
             navigate('/game')
         } else {
-            console.log("No such document!");
             toast.error('Please fill in the correct Room-key');
         }
     }

@@ -19,7 +19,8 @@
     "react-toastify": "^8.2.0",
     "styled-components": "^5.3.3",
     "uuidv4": "^6.2.12",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "webfontloader": "^1.6.28"
   },
   "scripts": {
     "start": "react-scripts start",

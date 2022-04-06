@@ -11,12 +11,6 @@ const Navbar = () => {
     return (
         <nav className="navbar navbar-light bg-dark">
             <div className="container-fluid">
-                <Link
-                    to={"/"}
-                    className="navbar-brand justify-content-center text-white"
-                >
-                    Logo
-                </Link>
                 <Link to={"/"} className="navbar-brand text-white">
                     Push, The XO
                 </Link>

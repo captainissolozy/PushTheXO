@@ -8,7 +8,6 @@ import LoginPage from "./pages/login";
 import RegisPage from "./pages/signup";
 import Game from "./pages/game/gamePlay/Game";
 
-
 function App() {
 
     return (<>

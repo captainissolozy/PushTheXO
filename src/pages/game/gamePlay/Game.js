@@ -5,10 +5,12 @@ import db from "../../../config/firebase-config";
 import {Button} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {toast, ToastContainer} from "react-toastify";
+import CountdownTimer from "../../../components/common/CountdownTimer";
 
 const Game = () => {
 
     const [gameData, setGameData] = useState({});
+    const [lobbyData, setLobbyData] = useState({});
     const [disableX, setDisableX] = useState(false);
     const [disableO, setDisableO] = useState(false);
     const [winX, setWinX] = useState(0)
@@ -19,6 +21,8 @@ const Game = () => {
     const navigate = useNavigate();
     const docRef = doc(db, 'Game', gameKey)
     const docRef2 = doc(db, 'User', gameKey)
+    const NOW_IN_MS = new Date().getTime();
+    const timer = lobbyData.timeLimit*60*1000;
 
 
     const boardGame = () => {
@@ -53,22 +57,22 @@ const Game = () => {
 
     const joinX = async () => {
 
-        if (gameData.playerX === "") {
+        if (gameData.playerX === "" && gameData.playerY !== sessionStorage.getItem('email')) {
             await updateDoc(docRef, {playerX: sessionStorage.getItem('email')})
             toast.success('success')
         } else {
-            toast.error('Please Choose another role');
+            toast.error('Please Choose another role', {toastId: 2});
         }
 
     }
 
     const joinY = async () => {
 
-        if (gameData.playerY === "") {
+        if (gameData.playerY === "" && gameData.playerX !== sessionStorage.getItem('email')) {
             await updateDoc(docRef, {playerY: sessionStorage.getItem('email')})
             toast.success('success')
         } else {
-            toast.error('Please Choose another role');
+            toast.error('Please Choose another role', {toastId: 2});
         }
 
     }
@@ -95,14 +99,22 @@ const Game = () => {
     }
 
     const handleStart = () => {
-        if (gameData.playerX !== "" && gameData.playerY !== "") {
+        if (gameData.playerX !== "" && gameData.playerY !== "" && gameData.gameState !== true) {
             updateDoc(docRef, {gameState: true})
-            toast.success('Game Start');
+            resetBoard().then()
+            toast.success('Game Start', {toastId: 3});
         } else {
-            toast.error('Please Choose Your role first');
+            toast.error('Please Choose Your role first', {toastId: 3});
         }
 
     }
+
+    useEffect(() => {
+        onSnapshot(doc(db, "User", gameKey), (snapshot) => {
+            setLobbyData(snapshot.data())
+        });
+
+    }, [])
 
     useEffect(() => {
         onSnapshot(doc(db, "Game", gameKey), (snapshot) => {
@@ -119,10 +131,10 @@ const Game = () => {
         } else if (gameData.turn % 2 === 1) {
             setTurn('O')
         }
-        if (gameData.gameState === true || gameData.playerY !== "") {
+        if (gameData.playerY !== "") {
             setDisableO(true)
         }
-        if (gameData.gameState === true || gameData.playerX !== "") {
+        if (gameData.playerX !== "") {
             setDisableX(true)
         } else if (gameData.gameState === false) {
             setDisableX(false)
@@ -136,11 +148,11 @@ const Game = () => {
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
                             resetBoard().then()
-                            toast.success('X win');
+                            toast.success('X win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         } else if (turn === "O") {
                             updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false}).then()
                             resetBoard().then()
-                            toast.success('O win');
+                            toast.success('O win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         }
                     }
                     if (gameData[i] === gameData[i + 16] && gameData[i] === gameData[i + 32]
@@ -148,11 +160,11 @@ const Game = () => {
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
                             resetBoard().then()
-                            toast.success('X win');
+                            toast.success('X win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         } else if (turn === "O") {
                             updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false}).then()
                             resetBoard().then()
-                            toast.success('O win');
+                            toast.success('O win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         }
                     }
                     if (gameData[i] === gameData[i + 15] && gameData[i] === gameData[i + 30]
@@ -160,11 +172,11 @@ const Game = () => {
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
                             resetBoard().then()
-                            toast.success('X win');
+                            toast.success('X win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         } else if (turn === "O") {
                             updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false}).then()
                             resetBoard().then()
-                            toast.success('O win');
+                            toast.success('O win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         }
                     }
                     if (gameData[i] === gameData[i + 14] && gameData[i] === gameData[i + 28]
@@ -172,11 +184,11 @@ const Game = () => {
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
                             resetBoard().then()
-                            toast.success('X win');
+                            toast.success('X win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         } else if (turn === "O") {
                             updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false}).then()
                             resetBoard().then()
-                            toast.success('O win');
+                            toast.success('O win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         }
                     }
                 }
@@ -189,7 +201,7 @@ const Game = () => {
     return (
         <GamePlayWrapper>
             <h2 className="text-center mb-2 p-2">Room Key : {gameKey}</h2>
-            <h3 className="text-center m-4">Best of {gameData.winCon} ==> {winX} : {winY}</h3>
+            <h3 className="text-center m-4">Best of {gameData.winCon}</h3>
             <h4 className="text-center m-2">Turn : {turn}</h4>
             <div className="container">
                 <div className="row justify-content-center">
@@ -207,9 +219,11 @@ const Game = () => {
             <div className="container-fluid">
                 <div className="row justify-content-center">
                     <div className="col-2">
-                        <h2 className="text-center">PlayerX</h2>
+                        <h1 className="text-center"> {winX}</h1>
+                        <h2 className="text-center">Player X</h2>
                         <p className="text-center mt-3">{gameData.playerX}</p>
-                        <p className="text-center mt-3">Time limit:</p>
+                        <h3 className="text-center mt-3">Time limit:</h3>
+                        <CountdownTimer targetDate={NOW_IN_MS+timer}/>
                     </div>
 
                     <div className="col-6 d-flex justify-content-center">
@@ -223,13 +237,15 @@ const Game = () => {
                     </div>
 
                     <div className="col-2">
-                        <h2 className="text-center">PlayerO</h2>
+                        <h1 className="text-center"> {winY}</h1>
+                        <h2 className="text-center">Player O</h2>
                         <p className="text-center mt-3">{gameData.playerY}</p>
-                        <p className="text-center mt-3">Time limit:</p>
+                        <h3 className="text-center mt-3">Time limit:</h3>
+                        <CountdownTimer targetDate={NOW_IN_MS+timer}/>
                     </div>
                 </div>
             </div>
-            <div className="d-flex justify-content-center mt-4">
+            <div className="d-flex justify-content-center mt-4 mb-2">
                 <Button variant="outlined" className="mx-4">IronXO</Button>
                 <Button variant="outlined" className="mx-4">Bomb</Button>
                 <Button variant="contained" color="error" className="mx-4" onClick={() => {
