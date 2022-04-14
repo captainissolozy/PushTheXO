@@ -5,7 +5,7 @@ import db from "../../../config/firebase-config";
 import {Button} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {toast, ToastContainer} from "react-toastify";
-import CountdownTimer from "../../../components/common/CountdownTimer";
+
 
 const Game = () => {
 
@@ -21,8 +21,6 @@ const Game = () => {
     const navigate = useNavigate();
     const docRef = doc(db, 'Game', gameKey)
     const docRef2 = doc(db, 'User', gameKey)
-    const NOW_IN_MS = new Date().getTime();
-    const timer = lobbyData.timeLimit*60*1000;
 
 
     const boardGame = () => {
@@ -223,7 +221,7 @@ const Game = () => {
                         <h2 className="text-center">Player X</h2>
                         <p className="text-center mt-3">{gameData.playerX}</p>
                         <h3 className="text-center mt-3">Time limit:</h3>
-                        <CountdownTimer targetDate={NOW_IN_MS+timer}/>
+
                     </div>
 
                     <div className="col-6 d-flex justify-content-center">
@@ -241,7 +239,7 @@ const Game = () => {
                         <h2 className="text-center">Player O</h2>
                         <p className="text-center mt-3">{gameData.playerY}</p>
                         <h3 className="text-center mt-3">Time limit:</h3>
-                        <CountdownTimer targetDate={NOW_IN_MS+timer}/>
+
                     </div>
                 </div>
             </div>
