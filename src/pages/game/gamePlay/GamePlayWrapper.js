@@ -16,5 +16,14 @@ const GamePlayWrapper = styled.div`
   text-align: center;
   padding: 9px;
 }
+  .returnl-box{
+    height: 200px;
+    width: 300px;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
 `
 export default GamePlayWrapper

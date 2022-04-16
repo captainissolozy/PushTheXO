@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import GamePlayWrapper from "./GamePlayWrapper";
-import {onSnapshot, doc, getDoc, updateDoc} from "firebase/firestore";
+import {onSnapshot, doc, getDoc, updateDoc, deleteDoc} from "firebase/firestore";
 import db from "../../../config/firebase-config";
-import {Button} from "@mui/material";
+import {Box, Button, Typography} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {toast, ToastContainer} from "react-toastify";
-
+import Modal from "@material-ui/core/Modal";
 
 const Game = () => {
 
@@ -15,6 +15,8 @@ const Game = () => {
     const [lobbyData, setLobbyData] = useState({});
     const [disableX, setDisableX] = useState(false);
     const [disableO, setDisableO] = useState(false);
+    const [userInfo, setUserInfo] = useState({})
+    const [open, setOpen] = useState(false)
     const [winX, setWinX] = useState(0)
     const [winY, setWinY] = useState(0)
     const [winCon, setWinCon] = useState(0)
@@ -36,6 +38,31 @@ const Game = () => {
         return row;
     };
 
+    useEffect(async () => {
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+            navigate('/lobby')
+        }
+    }, [gameData])
+
+    const handleTerminate = () => {
+        const confirmBox1 = window.confirm(
+            "Do you really want to Terminate the room?"
+        )
+        if (confirmBox1 === true) {
+            if (Object.keys(lobbyData).length !== 0) {
+                if (lobbyData.email === sessionStorage.getItem('email')) {
+                    deleteDoc(docRef)
+                    deleteDoc(docRef2)
+                    navigate('/lobby')
+                } else {
+                    toast.error('Only Host can terminate Game', {toastId: 5});
+                }
+            }
+        }
+
+    }
+
     const handleXO = async (el) => {
         if (gameData.gameState === true) {
             if (gameData.turn % 2 === 0 && sessionStorage.getItem('email') === gameData.playerX) {
@@ -53,6 +80,10 @@ const Game = () => {
                 }
             }
         }
+    }
+
+    const handleClose = () => {
+        setOpen(false)
     }
 
     const joinX = async () => {
@@ -112,6 +143,7 @@ const Game = () => {
         setDisableX(false)
         setDisableO(false)
 
+
         if (winner === gameData.playerX) {
             const docRef0 = doc(db, 'UsersDetail', winner)
             updateDoc(docRef0, {Win: userXData.Win + 1})
@@ -128,12 +160,13 @@ const Game = () => {
         updateDoc(docRef, {turn: 0, playerX: "", playerY: "", winX: 0, winY: 0}).then()
     }
 
-
     useEffect(() => {
         onSnapshot(doc(db, "User", gameKey), (snapshot) => {
             setLobbyData(snapshot.data())
         });
-
+        onSnapshot(doc(db, "UsersDetail", sessionStorage.getItem('email')), (snapshot) => {
+            setUserInfo(snapshot.data())
+        });
     }, [])
 
     useEffect(() => {
@@ -143,13 +176,14 @@ const Game = () => {
     }, [])
 
     useEffect(() => {
-        if (Object.keys(gameData).length !== 0 && gameData.playerX !== "" && gameData.playerY !== ""){
-        onSnapshot(doc(db, "UsersDetail", gameData.playerX), (snapshot) => {
-            setUserXData(snapshot.data())
-        });
-        onSnapshot(doc(db, "UsersDetail", gameData.playerY), (snapshot) => {
-            setUserOData(snapshot.data())
-        });}
+        if (Object.keys(gameData).length !== 0 && gameData.playerX !== "" && gameData.playerY !== "") {
+            onSnapshot(doc(db, "UsersDetail", gameData.playerX), (snapshot) => {
+                setUserXData(snapshot.data())
+            });
+            onSnapshot(doc(db, "UsersDetail", gameData.playerY), (snapshot) => {
+                setUserOData(snapshot.data())
+            });
+        }
     }, [gameData])
 
 
@@ -166,10 +200,10 @@ const Game = () => {
         } else if (gameData.turn % 2 === 1) {
             setTurn('O')
         }
-        if (gameData.playerY !== "") {
+        if (gameData.playerY !== "" && typeof gameData.playerY !== "undefined") {
             setDisableO(true)
         }
-        if (gameData.playerX !== "") {
+        if (gameData.playerX !== "" && typeof gameData.playerY !== "undefined") {
             setDisableX(true)
         } else if (gameData.gameState === false) {
             setDisableX(false)
@@ -235,22 +269,32 @@ const Game = () => {
                 lobbyData.WinState = false
                 winMatch(gameData.playerX)
                 resetBoard().then()
-
+                setOpen(true)
             } else if (gameData.winY === winCon && gameData.turn >= 8) {
                 updateDoc(docRef2, {WinState: false}).then()
                 lobbyData.WinState = false
                 winMatch(gameData.playerY)
                 resetBoard().then()
-
+                setOpen(true)
             }
         }
 
     }, [gameData])
 
+    window.onerror = function() {
+        // eslint-disable-next-line no-restricted-globals
+        location.reload();
+    }
+
     if (Object.keys(gameData).length === 0) return null
     return (
         <GamePlayWrapper>
-            <h2 className="text-center mb-2 p-2">Room Key : {gameKey}</h2>
+            <div className="col">
+                <h2 className="text-center mb-2 p-2">Room Key : {gameKey} <Button variant="contained" color="error"
+                                                                                  className="mx-4"
+                                                                                  onClick={handleTerminate}>Terminate
+                    Game</Button></h2>
+            </div>
             <h3 className="text-center m-4">Best of {gameData.winCon}</h3>
             <h4 className="text-center m-2">Turn : {turn}</h4>
             <div className="container">
@@ -309,7 +353,29 @@ const Game = () => {
                 <Button variant="contained" className="mx-4" onClick={handleStart}>Start</Button>
             </div>
 
-            <ToastContainer limit={4} autoClose={500}/>
+            <ToastContainer limit={4} autoClose={700}/>
+            <Modal
+                open={open}
+                className="d-flex justify-content-center align-items-center p-3"
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box className="bg-light p-3 border border-primary rounded-3" sx={{ width: 380 }}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2" className="border-bottom border-dark d-flex justify-content-center align-items-center mx-4">
+                        User Information
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }} className="m-4">
+                        Email : {userInfo.email}
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }} className="m-4">
+                        Win : {userInfo.Win}
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }} className="m-4">
+                        Loses : {userInfo.Loses}
+                    </Typography>
+                </Box>
+            </Modal>
         </GamePlayWrapper>
     )
 }
