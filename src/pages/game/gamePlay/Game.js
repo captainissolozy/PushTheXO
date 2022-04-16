@@ -138,18 +138,18 @@ const Game = () => {
             setDisableX(false)
             setDisableO(false)
         }
-        if (gameData.gameState) {
+        if (gameData.gameState === true && gameData.turn >= 5) {
             for (let i = 1; i <= 225; i++) {
                 if (gameData[i] !== "") {
                     if (gameData[i] === gameData[i + 1] && gameData[i] === gameData[i + 2]
                         && gameData[i] === gameData[i + 3] && gameData[i] === gameData[i + 4]) {
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
-                            resetBoard().then()
+                            gameData.gameState = false
                             toast.success('X win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         } else if (turn === "O") {
                             updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false}).then()
-                            resetBoard().then()
+                            gameData.gameState = false
                             toast.success('O win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         }
                     }
@@ -157,11 +157,11 @@ const Game = () => {
                         && gameData[i] === gameData[i + 48] && gameData[i] === gameData[i + 64]) {
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
-                            resetBoard().then()
+                            gameData.gameState = false
                             toast.success('X win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         } else if (turn === "O") {
                             updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false}).then()
-                            resetBoard().then()
+                            gameData.gameState = false
                             toast.success('O win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         }
                     }
@@ -169,11 +169,11 @@ const Game = () => {
                         && gameData[i] === gameData[i + 45] && gameData[i] === gameData[i + 60]) {
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
-                            resetBoard().then()
+                            gameData.gameState = false
                             toast.success('X win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         } else if (turn === "O") {
                             updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false}).then()
-                            resetBoard().then()
+                            gameData.gameState = false
                             toast.success('O win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         }
                     }
@@ -181,11 +181,11 @@ const Game = () => {
                         && gameData[i] === gameData[i + 42] && gameData[i] === gameData[i + 56]) {
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
-                            resetBoard().then()
+                            gameData.gameState = false
                             toast.success('X win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         } else if (turn === "O") {
                             updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false}).then()
-                            resetBoard().then()
+                            gameData.gameState = false
                             toast.success('O win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         }
                     }

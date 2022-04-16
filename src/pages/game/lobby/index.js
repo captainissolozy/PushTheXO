@@ -21,7 +21,8 @@ export default function Lobby() {
         title: "",
         timeLimit: 0,
         gameState: true,
-        turn: 0
+        turn: 0,
+        pubLic: "No"
     });
     const initialGameData = Object.freeze({
         winX: 0,
@@ -403,6 +404,18 @@ export default function Lobby() {
                         >
                             <FormControlLabel value="10" control={<Radio/>} label="10 minute"/>
                             <FormControlLabel value="no" control={<Radio/>} label="No time limit"/>
+                        </RadioGroup>
+                    </FormControl>
+                    <FormControl>
+                        <FormLabel id="demo-radio-buttons-group-label">Public</FormLabel>
+                        <RadioGroup
+                            aria-labelledby="demo-radio-buttons-group-label"
+                            name="pubLic"
+                            required
+                            onChange={handleChange}
+                        >
+                            <FormControlLabel value="yes" control={<Radio/>} label="yes"/>
+                            <FormControlLabel value="no" control={<Radio/>} label="No"/>
                         </RadioGroup>
                     </FormControl>
 
