@@ -129,14 +129,18 @@ const Game = () => {
     }
 
     const handleStart = () => {
-        if (gameData.playerX !== "" && gameData.playerY !== "" && gameData.gameState !== true) {
-            updateDoc(docRef, {gameState: true})
-            resetBoard().then()
-            toast.success('Game Start', {toastId: 3});
-        } else {
-            toast.error('Please Choose Your role first', {toastId: 3});
+        if (sessionStorage.getItem('email') === gameData.playerX) {
+            if (gameData.playerX !== "" && gameData.playerY !== "" && gameData.gameState !== true) {
+                updateDoc(docRef, {gameState: true})
+                resetBoard().then()
+                toast.success('Game Start', {toastId: 3});
+            } else {
+                toast.error('Please Choose Your role first', {toastId: 3});
+            }
+            updateDoc(docRef2, {WinState: true}).then()
+        }else{
+            toast.error('Only Playr X can Start Game', {toastId: 7});
         }
-        updateDoc(docRef2, {WinState: true}).then()
     }
 
     const winMatch = (winner) => {
@@ -281,7 +285,7 @@ const Game = () => {
 
     }, [gameData])
 
-    window.onerror = function() {
+    window.onerror = function () {
         // eslint-disable-next-line no-restricted-globals
         location.reload();
     }
@@ -361,17 +365,18 @@ const Game = () => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box className="bg-light p-3 border border-primary rounded-3" sx={{ width: 380 }}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2" className="border-bottom border-dark d-flex justify-content-center align-items-center mx-4">
+                <Box className="bg-light p-3 border border-primary rounded-3" sx={{width: 380}}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2"
+                                className="border-bottom border-dark d-flex justify-content-center align-items-center mx-4">
                         User Information
                     </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }} className="m-4">
+                    <Typography id="modal-modal-description" sx={{mt: 2}} className="m-4">
                         Email : {userInfo.email}
                     </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }} className="m-4">
+                    <Typography id="modal-modal-description" sx={{mt: 2}} className="m-4">
                         Win : {userInfo.Win}
                     </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }} className="m-4">
+                    <Typography id="modal-modal-description" sx={{mt: 2}} className="m-4">
                         Loses : {userInfo.Loses}
                     </Typography>
                 </Box>
