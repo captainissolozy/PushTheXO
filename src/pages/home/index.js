@@ -1,8 +1,13 @@
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import HomeWrapper from "./HomeWrapper";
+import {useEffect} from "react";
+import {useUserContext} from "../../context/UserContexts";
 
 
 const Home = () => {
+  const {user} = useUserContext()
+  const navigate = useNavigate()
+
   const btnArray = [
     {
       txt: "Log-in",
@@ -17,6 +22,14 @@ const Home = () => {
       path: "/lobby"
     }
   ];
+
+  useEffect(() => {
+    if (user) {
+      navigate('/lobby')
+    }
+  }, [navigate, user])
+
+  if (user) return null
   return (
     <HomeWrapper>
       <div className="box">

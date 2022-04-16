@@ -24,16 +24,18 @@ const Navbar = () => {
     }
 
     useEffect(() => {
+        if (user){
         onSnapshot(doc(db, "UsersDetail", user.email), (snapshot) => {
             setUserInfo(snapshot.data())
         });
+        }
 
-    }, [])
+    }, [open])
 
     return (
         <nav className="navbar navbar-light bg-dark">
             <div className="container-fluid">
-                <Link to={"/"} className="navbar-brand text-white">
+                <Link to={"/home"} className="navbar-brand text-white">
                     Push, The XO
                 </Link>{user? <Button variant="text" onClick={handleUser}>{user.email}</Button> : <Button></Button>}
                 <Link to={"/home"} className="navbar-brand text-white">

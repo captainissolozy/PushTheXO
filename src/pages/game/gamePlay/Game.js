@@ -10,6 +10,8 @@ import {toast, ToastContainer} from "react-toastify";
 const Game = () => {
 
     const [gameData, setGameData] = useState({});
+    const [userXData, setUserXData] = useState({});
+    const [userOData, setUserOData] = useState({});
     const [lobbyData, setLobbyData] = useState({});
     const [disableX, setDisableX] = useState(false);
     const [disableO, setDisableO] = useState(false);
@@ -38,14 +40,14 @@ const Game = () => {
         if (gameData.gameState === true) {
             if (gameData.turn % 2 === 0 && sessionStorage.getItem('email') === gameData.playerX) {
                 if (gameData[el.target.id] === "") {
-                    console.log(el.target.id)
+
                     await updateDoc(docRef, {[el.target.id]: "X"})
                     await updateDoc(docRef, {turn: gameData.turn + 1})
                 }
             }
             if (gameData.turn % 2 === 1 && sessionStorage.getItem('email') === gameData.playerY) {
                 if (gameData[el.target.id] === "") {
-                    console.log(el.target.id)
+
                     await updateDoc(docRef, {[el.target.id]: "O"})
                     await updateDoc(docRef, {turn: gameData.turn + 1});
                 }
@@ -77,7 +79,6 @@ const Game = () => {
     const resetBoard = async () => {
         const initialBoard = Object.keys(gameData).filter((key) => {
             return !isNaN(key);
-
         })
         await updateDoc(docRef, Object.fromEntries(initialBoard.map((key) => [key, ''])))
     }
@@ -104,8 +105,29 @@ const Game = () => {
         } else {
             toast.error('Please Choose Your role first', {toastId: 3});
         }
-
+        updateDoc(docRef2, {WinState: true}).then()
     }
+
+    const winMatch = (winner) => {
+        setDisableX(false)
+        setDisableO(false)
+
+        if (winner === gameData.playerX) {
+            const docRef0 = doc(db, 'UsersDetail', winner)
+            updateDoc(docRef0, {Win: userXData.Win + 1})
+            const docRef1 = doc(db, 'UsersDetail', gameData.playerY)
+            updateDoc(docRef1, {Loses: userOData.Loses + 1})
+
+        } else {
+            const docRef0 = doc(db, 'UsersDetail', winner)
+            updateDoc(docRef0, {Win: userOData.Win + 1})
+            const docRef1 = doc(db, 'UsersDetail', gameData.playerX)
+            updateDoc(docRef1, {Loses: userXData.Loses + 1})
+
+        }
+        updateDoc(docRef, {turn: 0, playerX: "", playerY: "", winX: 0, winY: 0}).then()
+    }
+
 
     useEffect(() => {
         onSnapshot(doc(db, "User", gameKey), (snapshot) => {
@@ -118,12 +140,27 @@ const Game = () => {
         onSnapshot(doc(db, "Game", gameKey), (snapshot) => {
             setGameData(snapshot.data())
         });
-
     }, [])
+
+    useEffect(() => {
+        if (Object.keys(gameData).length !== 0 && gameData.playerX !== "" && gameData.playerY !== ""){
+        onSnapshot(doc(db, "UsersDetail", gameData.playerX), (snapshot) => {
+            setUserXData(snapshot.data())
+        });
+        onSnapshot(doc(db, "UsersDetail", gameData.playerY), (snapshot) => {
+            setUserOData(snapshot.data())
+        });}
+    }, [gameData])
+
 
     useEffect(() => {
         setWinX(gameData.winX)
         setWinY(gameData.winY)
+        if (gameData.winCon === 3 && gameData.turn === 0) {
+            setWinCon(2)
+        } else if (gameData.winCon === 2 && gameData.turn === 0) {
+            setWinCon(1)
+        }
         if (gameData.turn % 2 === 0) {
             setTurn('X')
         } else if (gameData.turn % 2 === 1) {
@@ -138,7 +175,7 @@ const Game = () => {
             setDisableX(false)
             setDisableO(false)
         }
-        if (gameData.gameState === true && gameData.turn >= 5) {
+        if (gameData.gameState === true && gameData.turn >= 8) {
             for (let i = 1; i <= 225; i++) {
                 if (gameData[i] !== "") {
                     if (gameData[i] === gameData[i + 1] && gameData[i] === gameData[i + 2]
@@ -190,6 +227,21 @@ const Game = () => {
                         }
                     }
                 }
+            }
+        }
+        if (lobbyData.WinState === true) {
+            if (gameData.winX === winCon && gameData.turn >= 8) {
+                updateDoc(docRef2, {WinState: false}).then()
+                lobbyData.WinState = false
+                winMatch(gameData.playerX)
+                resetBoard().then()
+
+            } else if (gameData.winY === winCon && gameData.turn >= 8) {
+                updateDoc(docRef2, {WinState: false}).then()
+                lobbyData.WinState = false
+                winMatch(gameData.playerY)
+                resetBoard().then()
+
             }
         }
 
@@ -257,7 +309,7 @@ const Game = () => {
                 <Button variant="contained" className="mx-4" onClick={handleStart}>Start</Button>
             </div>
 
-            <ToastContainer limit={1}/>
+            <ToastContainer limit={4} autoClose={500}/>
         </GamePlayWrapper>
     )
 }

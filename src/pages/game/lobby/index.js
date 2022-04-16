@@ -22,7 +22,8 @@ export default function Lobby() {
         timeLimit: 0,
         gameState: true,
         turn: 0,
-        pubLic: "No"
+        pubLic: "No",
+        WinState: false
     });
     const initialGameData = Object.freeze({
         winX: 0,
