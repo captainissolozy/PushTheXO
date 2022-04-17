@@ -6,12 +6,18 @@ const LobbyWrapper = styled.div`
 }
 .t-tab{
     height: calc(75vh - 62.5px);
+  border-bottom: black;
 }
 
 .t-stick{
     position: sticky; top: 0;
     border-top: white;
 }
-
+.table{
+  border-bottom: solid black 2px;
+}
+  .box{
+    border: solid black 2px;
+  }
 `
 export default LobbyWrapper

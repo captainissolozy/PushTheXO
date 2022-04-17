@@ -35,6 +35,8 @@ export default function Lobby() {
         playerY: "",
         gameState: false,
         turn: 0,
+        ironX: "",
+        ironO:"",
         1: '',
         2: '',
         3: '',
@@ -276,14 +278,11 @@ export default function Lobby() {
         }
     }, [navigate, user])
 
-    const validate = (title, time, win) => {
+    const validate = (title, win) => {
         const errors = [];
 
         if (title === "") {
             errors.push("Can't be empty");
-        }
-        if (time === 0) {
-            errors.push("empty");
         }
         if (win === 0) {
             errors.push("empty");
@@ -323,8 +322,9 @@ export default function Lobby() {
 
     const handleSubmit = async (e) => {
 
+        e.preventDefault()
         sessionStorage.setItem('gameKey', pKey);
-        const errors = validate(formData.title, formData.timeLimit, formData.winCon)
+        const errors = validate(formData.title, formData.winCon)
 
         if (errors.length === 0) {
             const docRef1 = doc(db, "Game", pKey);
@@ -355,14 +355,13 @@ export default function Lobby() {
             <div className="wrapper-box">
                 <div className="container pt-5">
                     <div className="row mt-2">
-                        <div className="col-12 t-tab border border-black">
+                        <div className="col-12 t-tab box">
                             <table className="table">
                                 <thead>
                                 <tr>
                                     <th scope="col" className="t-stick">Best of</th>
                                     <th scope="col" className="t-stick">Rooms</th>
                                     <th scope="col" className="t-stick">Owner</th>
-                                    <th scope="col" className="t-stick">Time-Limit</th>
                                     <th scope="col" className="t-stick">Public</th>
                                 </tr>
                                 </thead>
@@ -428,18 +427,6 @@ export default function Lobby() {
                         </RadioGroup>
                     </FormControl>
                     <FormControl>
-                        <FormLabel id="demo-radio-buttons-group-label">Time Limit</FormLabel>
-                        <RadioGroup
-                            aria-labelledby="demo-radio-buttons-group-label"
-                            name="timeLimit"
-                            required
-                            onChange={handleChange}
-                        >
-                            <FormControlLabel value="10" control={<Radio/>} label="10 minute"/>
-                            <FormControlLabel value="no" control={<Radio/>} label="No time limit"/>
-                        </RadioGroup>
-                    </FormControl>
-                    <FormControl>
                         <FormLabel id="demo-radio-buttons-group-label">Public</FormLabel>
                         <RadioGroup
                             aria-labelledby="demo-radio-buttons-group-label"
@@ -447,7 +434,7 @@ export default function Lobby() {
                             required
                             onChange={handleChange}
                         >
-                            <FormControlLabel value="yes" control={<Radio/>} label="yes"/>
+                            <FormControlLabel value="yes" control={<Radio/>} label="Yes"/>
                             <FormControlLabel value="no" control={<Radio/>} label="No"/>
                         </RadioGroup>
                     </FormControl>

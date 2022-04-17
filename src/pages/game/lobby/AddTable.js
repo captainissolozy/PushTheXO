@@ -1,31 +1,49 @@
 import {useEffect, useState} from "react";
 import db from "../../../config/firebase-config"
-import { onSnapshot, collection } from "firebase/firestore"
+import {onSnapshot, collection, doc, getDoc} from "firebase/firestore"
+import {useNavigate} from "react-router-dom";
+
+
 
 const AddTable = () => {
 
     const [formData, setFormData] = useState([])
-
+    const navigate = useNavigate()
 
     useEffect(() => {
-        onSnapshot(collection(db, "User"), (snapshot) =>{
-            setFormData(snapshot.docs.map( (doc) => doc.data()))
+        onSnapshot(collection(db, "User"), (snapshot) => {
+            setFormData(snapshot.docs.map((doc) => doc.data()))
         });
     }, [])
 
-    return(
+    const handleJoinPublic = async (id, boo) => {
+        console.log(id)
+        console.log(boo)
+        if (boo === "yes") {
+            sessionStorage.setItem('gameKey', id)
+            const docRef1 = doc(db, "Game", id);
+            const docSnap = await getDoc(docRef1);
+            if (docSnap.exists()) {
+                navigate('/game')
+            }
+        }
+    }
 
-            formData.map((data) => (
+    return (
+
+        formData.map((data) => (
+
                 <tbody>
-                    <tr>
-                        <td >{data.winCon}</td>
-                        <td >{data.title}</td>
-                        <td >{data.email}</td>
-                        <td >{data.timeLimit}</td>
-                        <td >{data.pubLic}</td>
-                    </tr>
+                <tr onClick={() => handleJoinPublic(data.UniqueKey, data.pubLic)} style={{cursor: "pointer"}}>
+                    <td>{data.winCon}</td>
+                    <td>{data.title}</td>
+                    <td>{data.email}</td>
+                    <td>{data.pubLic}</td>
+
+                </tr>
                 </tbody>
-            ))
+
+        ))
 
 
     )
