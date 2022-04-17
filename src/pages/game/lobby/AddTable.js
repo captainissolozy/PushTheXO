@@ -22,6 +22,7 @@ const AddTable = () => {
                         <td >{data.title}</td>
                         <td >{data.email}</td>
                         <td >{data.timeLimit}</td>
+                        <td >{data.pubLic}</td>
                     </tr>
                 </tbody>
             ))

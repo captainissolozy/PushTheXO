@@ -22,8 +22,10 @@ export default function Lobby() {
         timeLimit: 0,
         gameState: true,
         turn: 0,
-        pubLic: "No",
-        WinState: false
+        pubLic: "no",
+        WinState: false,
+        UniqueKey: "",
+        winCon: 0
     });
     const initialGameData = Object.freeze({
         winX: 0,
@@ -274,6 +276,22 @@ export default function Lobby() {
         }
     }, [navigate, user])
 
+    const validate = (title, time, win) => {
+        const errors = [];
+
+        if (title === "") {
+            errors.push("Can't be empty");
+        }
+        if (time === 0) {
+            errors.push("empty");
+        }
+        if (win === 0) {
+            errors.push("empty");
+        }
+
+        return errors;
+    }
+
     const generateKey = function () {
         const unique_id = uuid();
         return unique_id.slice(0, 8);
@@ -288,7 +306,8 @@ export default function Lobby() {
     const handleChange = (e) => {
         updateFormData({
             ...formData,
-            [e.target.name]: e.target.value.trim()
+            [e.target.name]: e.target.value.trim(),
+            UniqueKey: pKey
         })
         if (e.target.name === "winCon") {
             upDateGameData({
@@ -303,20 +322,25 @@ export default function Lobby() {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
+
         sessionStorage.setItem('gameKey', pKey);
-        const docRef1 = doc(db, "Game", pKey);
-        await setDoc(docRef1, gameData);
-        const docRef = doc(db, "User", pKey);
-        await setDoc(docRef, formData);
-        navigate('/game')
+        const errors = validate(formData.title, formData.timeLimit, formData.winCon)
+
+        if (errors.length === 0) {
+            const docRef1 = doc(db, "Game", pKey);
+            await setDoc(docRef1, gameData);
+            const docRef = doc(db, "User", pKey);
+            await setDoc(docRef, formData);
+            navigate('/game')
+        }else {
+            toast.error('Please fill in all the Criteria');
+        }
     };
 
     const handleJoin = async (e) => {
 
         e.preventDefault()
         sessionStorage.setItem('gameKey', searchKey)
-
         const docRef1 = doc(db, "Game", searchKey);
         const docSnap = await getDoc(docRef1);
         if (docSnap.exists()) {
@@ -339,6 +363,7 @@ export default function Lobby() {
                                     <th scope="col" className="t-stick">Rooms</th>
                                     <th scope="col" className="t-stick">Owner</th>
                                     <th scope="col" className="t-stick">Time-Limit</th>
+                                    <th scope="col" className="t-stick">Public</th>
                                 </tr>
                                 </thead>
                                 <AddTable/>
@@ -346,14 +371,14 @@ export default function Lobby() {
                         </div>
                     </div>
                     <div className="row mt-3 d-flex justify-content-center">
-                        <div className="col-6 p-0">
+                        <div className="col-6 p-0 pt-1">
                             <TextField id="outlined-search" type="search"
                                        label="Join Room" className="w-100" onChange={joinChange}/>
                         </div>
-                        <div className="col-2 d-flex justify-content-center m-1" onClick={handleJoin}>
+                        <div className="col-2 d-flex justify-content-center" onClick={handleJoin}>
                             <BasicButtons title={'Join'}/>
                         </div>
-                        <div className="col-2 d-flex justify-content-center m-1" onClick={handleCreate}>
+                        <div className="col-2 d-flex justify-content-center" onClick={handleCreate}>
                             <BasicButtons title={'Create Room'}/>
                         </div>
                     </div>
@@ -376,6 +401,12 @@ export default function Lobby() {
                                onChange={handleChange}
                     />
                     <TextField className="my-3"
+                               label="UniqueKey"
+                               disabled={true}
+                               value={pKey}
+                               onChange={handleChange}
+                    />
+                    <TextField className="my-3"
                                label="Title"
                                name="title"
                                variant="filled"
@@ -390,6 +421,7 @@ export default function Lobby() {
                             name="winCon"
                             type="number"
                             onChange={handleChange}
+
                         >
                             <FormControlLabel value={2} control={<Radio/>} label="Best of 2"/>
                             <FormControlLabel value={3} control={<Radio/>} label="Best of 3"/>
@@ -422,7 +454,7 @@ export default function Lobby() {
 
                     <div className="pt-2">
                         <div className="col d-flex justify-content-center">
-                            <Button type="submit" variant="contained" color="secondary" className="mx-3"
+                            <Button type="submit" variant="contained" color="secondary" className="mx-3 m"
                                     onClick={handleClose}>
                                 Close
                             </Button>
