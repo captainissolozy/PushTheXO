@@ -17,8 +17,6 @@ const AddTable = () => {
     }, [])
 
     const handleJoinPublic = async (id, boo) => {
-        console.log(id)
-        console.log(boo)
         if (boo === "yes") {
             sessionStorage.setItem('gameKey', id)
             const docRef1 = doc(db, "Game", id);

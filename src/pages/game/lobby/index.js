@@ -37,6 +37,8 @@ export default function Lobby() {
         turn: 0,
         ironX: "",
         ironO:"",
+        timeX:20,
+        timeO:20,
         1: '',
         2: '',
         3: '',
@@ -271,6 +273,8 @@ export default function Lobby() {
     const [gameData, upDateGameData] = useState(initialGameData)
     const [pKey, generatePKey] = useState("")
     const [searchKey, setSearchKey] = useState('')
+    sessionStorage.setItem('timeX', "20")
+    sessionStorage.setItem('timeO', "20")
 
     useEffect(() => {
         if (!user) {

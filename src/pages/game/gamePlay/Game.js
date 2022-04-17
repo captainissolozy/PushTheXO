@@ -7,6 +7,7 @@ import {useNavigate} from "react-router-dom";
 import {toast, ToastContainer} from "react-toastify";
 import Modal from "@material-ui/core/Modal";
 
+
 const Game = () => {
 
     const [gameData, setGameData] = useState({});
@@ -18,12 +19,12 @@ const Game = () => {
     const [disableCancel, setDisableCancel] = useState(true);
     const [disableIron, setDisableIron] = useState(false);
     const [disableBomb, setDisableBomb] = useState(false);
-    const [userInfo, setUserInfo] = useState({})
+    const [timeLeftX, setTimeLeftX] = useState(parseInt(sessionStorage.getItem('timeX')));
+    const [timeLeftO, setTimeLeftO] = useState(parseInt(sessionStorage.getItem('timeO')));
     const [modal, setModal] = useState("");
     const [open, setOpen] = useState(false)
     const [winX, setWinX] = useState(0)
     const [winY, setWinY] = useState(0)
-    const [pawnState, setPawnState] = useState(0)
     const [winCon, setWinCon] = useState(0)
     const gameKey = sessionStorage.getItem('gameKey')
     const [turn, setTurn] = useState('Waiting')
@@ -75,9 +76,12 @@ const Game = () => {
                 if (gameData[el.target.id] === "" && sessionStorage.getItem('Iron') === "yes") {
                     await updateDoc(docRef, {[el.target.id]: "X", turn: gameData.turn + 1, ironX: el.target.id})
                     sessionStorage.setItem('Iron', "used")
+                    setTimeLeftX(20)
                     setDisableCancel(true)
                 } else if (gameData[el.target.id] === "") {
                     await updateDoc(docRef, {[el.target.id]: "X", turn: gameData.turn + 1})
+                    setTimeLeftX(20)
+                    console.log(sessionStorage.getItem('timeX'))
                 } else if (gameData[el.target.id] !== "X" && sessionStorage.getItem('Bomb') === "yes" && gameData.ironO !== el.target.id) {
                     sessionStorage.setItem('Bomb', "used")
                     await updateDoc(docRef, {[el.target.id]: ""})
@@ -90,9 +94,11 @@ const Game = () => {
                 if (gameData[el.target.id] === "" && sessionStorage.getItem('Iron') === "yes") {
                     await updateDoc(docRef, {[el.target.id]: "O", turn: gameData.turn + 1, ironO: el.target.id})
                     sessionStorage.setItem('Iron', "used")
+                    setTimeLeftO(20)
                     setDisableCancel(true)
                 } else if (gameData[el.target.id] === "") {
                     await updateDoc(docRef, {[el.target.id]: "O", turn: gameData.turn + 1})
+                    setTimeLeftO(20)
                 } else if (gameData[el.target.id] !== "O" && sessionStorage.getItem('Bomb') === "yes" && gameData.ironX !== el.target.id) {
                     sessionStorage.setItem('Bomb', "used")
                     await updateDoc(docRef, {[el.target.id]: ""})
@@ -103,6 +109,49 @@ const Game = () => {
             }
         }
     }
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (gameData.gameState === true) {
+                if (gameData.turn % 2 === 0) {
+                    if (timeLeftX > 0) {
+                        setTimeLeftX(timeLeftX - 1);
+                        sessionStorage.setItem('timeX', (timeLeftX - 1).toString())
+                    }
+                    if (timeLeftX === 0){
+                        updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false})
+                        setTimeLeftO(20)
+                        setTimeLeftX(20)
+                        toast.error('X Loses by Time Out!!', {toastId: 12});
+                    }
+
+                }
+            }
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    });
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (gameData.gameState === true) {
+                if (gameData.turn % 2 === 1) {
+                    if (timeLeftO > 0) {
+                        setTimeLeftO(timeLeftO - 1);
+                        sessionStorage.setItem('timeO', (timeLeftO - 1).toString())
+                    }
+                    if (timeLeftO === 0){
+                        updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false})
+                        setTimeLeftO(20)
+                        setTimeLeftX(20)
+                        toast.error('O Loses by Time Out!!', {toastId: 12});
+                    }
+                }
+            }
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    });
 
     const handleClose = () => {
         setOpen(false)
@@ -138,6 +187,8 @@ const Game = () => {
 
     const handleGiveUp = async () => {
         if (gameData.gameState === true) {
+            setTimeLeftO(20)
+            setTimeLeftX(20)
             if (sessionStorage.getItem('email') === gameData.playerX) {
                 await updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false})
             } else if (sessionStorage.getItem('email') === gameData.playerY) {
@@ -167,6 +218,8 @@ const Game = () => {
         setDisableO(false)
         sessionStorage.setItem('Iron', "no")
         sessionStorage.setItem('Bomb', "no")
+        setTimeLeftO(20)
+        setTimeLeftX(20)
         if (winner === gameData.playerX) {
             const docRef0 = doc(db, 'UsersDetail', winner)
             updateDoc(docRef0, {Win: userXData.Win + 1})
@@ -179,15 +232,12 @@ const Game = () => {
             const docRef1 = doc(db, 'UsersDetail', gameData.playerX)
             updateDoc(docRef1, {Loses: userXData.Loses + 1})
         }
-        updateDoc(docRef, {turn: 0, playerX: "", playerY: "", winX: 0, winY: 0}).then()
+        updateDoc(docRef, {turn: 0, playerX: "", playerY: "", winX: 0, winY: 0, gameState: false}).then()
     }
 
     useEffect(() => {
         onSnapshot(doc(db, "User", gameKey), (snapshot) => {
             setLobbyData(snapshot.data())
-        });
-        onSnapshot(doc(db, "UsersDetail", sessionStorage.getItem('email')), (snapshot) => {
-            setUserInfo(snapshot.data())
         });
     }, [])
 
@@ -212,9 +262,9 @@ const Game = () => {
     useEffect(() => {
         setWinX(gameData.winX)
         setWinY(gameData.winY)
-        if (gameData.winCon === 3 && gameData.turn === 0) {
+        if (gameData.winCon === 3) {
             setWinCon(2)
-        } else if (gameData.winCon === 2 && gameData.turn === 0) {
+        } else if (gameData.winCon === 2) {
             setWinCon(1)
         }
         if (gameData.turn % 2 === 0) {
@@ -238,6 +288,8 @@ const Game = () => {
                         && gameData[i] === gameData[i + 3] && gameData[i] === gameData[i + 4]) {
                         sessionStorage.setItem('Bomb', "no")
                         sessionStorage.setItem('Iron', "no")
+                        setTimeLeftO(20)
+                        setTimeLeftX(20)
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
                             gameData.gameState = false
@@ -252,6 +304,8 @@ const Game = () => {
                         && gameData[i] === gameData[i + 48] && gameData[i] === gameData[i + 64]) {
                         sessionStorage.setItem('Bomb', "no")
                         sessionStorage.setItem('Iron', "no")
+                        setTimeLeftO(20)
+                        setTimeLeftX(20)
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
                             gameData.gameState = false
@@ -266,6 +320,8 @@ const Game = () => {
                         && gameData[i] === gameData[i + 45] && gameData[i] === gameData[i + 60]) {
                         sessionStorage.setItem('Bomb', "no")
                         sessionStorage.setItem('Iron', "no")
+                        setTimeLeftO(20)
+                        setTimeLeftX(20)
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
                             gameData.gameState = false
@@ -280,6 +336,8 @@ const Game = () => {
                         && gameData[i] === gameData[i + 42] && gameData[i] === gameData[i + 56]) {
                         sessionStorage.setItem('Bomb', "no")
                         sessionStorage.setItem('Iron', "no")
+                        setTimeLeftO(20)
+                        setTimeLeftX(20)
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
                             gameData.gameState = false
@@ -312,11 +370,13 @@ const Game = () => {
         }
         if (lobbyData.WinState === true) {
             if (gameData.winX === winCon) {
+                console.log("why")
+                console.log(gameData.winX)
+                console.log(winCon)
                 updateDoc(docRef2, {WinState: false}).then()
                 lobbyData.WinState = false
                 winMatch(gameData.playerX)
                 resetBoard().then()
-
             } else if (gameData.winY === winCon) {
                 updateDoc(docRef2, {WinState: false}).then()
                 lobbyData.WinState = false
@@ -411,12 +471,14 @@ const Game = () => {
                         <div className="user-x">
                             <h2 className="text-center">Player X: {winX}</h2>
                             <p className="text-center mt-3">{gameData.playerX}</p>
-                            <h3 className="text-center mt-3">20</h3>
+                            {(sessionStorage.getItem('email') === gameData.playerX) ?
+                                <h3 className="text-center mt-3 .text-danger">{timeLeftX}</h3> : <h3></h3>}
                         </div>
                         <div className="user-o">
                             <h2 className="text-center">Player O: {winY}</h2>
                             <p className="text-center mt-3">{gameData.playerY}</p>
-                            <h3 className="text-center mt-3">20</h3>
+                            {(sessionStorage.getItem('email') === gameData.playerY) ?
+                                <h3 className="text-center mt-3 .text-danger">{timeLeftO}</h3> : <h3></h3>}
                         </div>
                         <div className="button-special d-flex justify-content-center">
                             <Button disabled={disableCancel} variant="contained" color="error" className="start-style"
