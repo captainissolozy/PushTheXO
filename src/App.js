@@ -7,6 +7,7 @@ import Lobby from "./pages/game/lobby";
 import LoginPage from "./pages/login";
 import RegisPage from "./pages/signup";
 import Game from "./pages/game/gamePlay/Game";
+import Initial from "./pages/initial/Initial";
 
 function App() {
 
@@ -14,6 +15,7 @@ function App() {
             <BrowserRouter>
                 <Navbar/>
                 <Routes>
+                    <Route path="/" element={<Initial/>}/>
                     <Route path="/home" element={<Home/>}/>
                     <Route
                         path="/login"

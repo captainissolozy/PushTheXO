@@ -2,6 +2,7 @@ import {Link, useNavigate} from "react-router-dom";
 import HomeWrapper from "./HomeWrapper";
 import {useEffect} from "react";
 import {useUserContext} from "../../context/UserContexts";
+import { getAuth, signInAnonymously } from "firebase/auth";
 
 
 const Home = () => {

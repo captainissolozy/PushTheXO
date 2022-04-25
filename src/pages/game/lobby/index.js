@@ -275,6 +275,8 @@ export default function Lobby() {
     const [searchKey, setSearchKey] = useState('')
     sessionStorage.setItem('timeX', "20")
     sessionStorage.setItem('timeO', "20")
+    sessionStorage.setItem('Iron', "no")
+    sessionStorage.setItem('Bomb', "no")
 
     useEffect(() => {
         if (!user) {

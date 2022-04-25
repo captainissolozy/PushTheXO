@@ -12,9 +12,11 @@ const LobbyWrapper = styled.div`
 .t-stick{
     position: sticky; top: 0;
     border-top: white;
+  overflow: hidden;
 }
 .table{
   border-bottom: solid black 2px;
+  overflow: hidden;
 }
   .box{
     border: solid black 2px;

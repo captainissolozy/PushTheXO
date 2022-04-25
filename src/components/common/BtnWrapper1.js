@@ -1,12 +1,12 @@
 import styled from "styled-components";
 
-const BtnWrapper = styled.div`
+const BtnWrapper1 = styled.div`
   .login-out{
     background-color: black;
     cursor: pointer;
-    @media screen and (max-width: 768px){
+    @media screen and (min-width: 768px){
       display: none;
     }
   }
 `
-export default BtnWrapper
+export default BtnWrapper1

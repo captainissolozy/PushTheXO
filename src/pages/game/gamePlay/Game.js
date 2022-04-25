@@ -451,7 +451,7 @@ const Game = () => {
                     Game</Button></h2>
             </div>
 
-            <h4 className="text-center m-2">Best of {gameData.winCon} Turn : {turn}</h4>
+            <h4 className="text-center m-2">Turn : {turn}</h4>
             <div className="container">
                 <div className="row justify-content-center r-join">
 
@@ -468,14 +468,17 @@ const Game = () => {
             <div className="container-fluid">
                 <div className="row justify-content-center">
                     <div className="col-2 user-content">
+                        <div className="winCon">
+                            <h1 className="text-center text-danger text-bold">Best of {gameData.winCon}</h1>
+                        </div>
                         <div className="user-x">
-                            <h2 className="text-center">Player X: {winX}</h2>
+                            <h3 className="text-center">Player X: {winX}</h3>
                             <p className="text-center mt-3">{gameData.playerX}</p>
                             {(sessionStorage.getItem('email') === gameData.playerX) ?
                                 <h3 className="text-center mt-3 .text-danger">{timeLeftX}</h3> : <h3></h3>}
                         </div>
                         <div className="user-o">
-                            <h2 className="text-center">Player O: {winY}</h2>
+                            <h3 className="text-center">Player O: {winY}</h3>
                             <p className="text-center mt-3">{gameData.playerY}</p>
                             {(sessionStorage.getItem('email') === gameData.playerY) ?
                                 <h3 className="text-center mt-3 .text-danger">{timeLeftO}</h3> : <h3></h3>}
