@@ -273,8 +273,8 @@ export default function Lobby() {
     const [gameData, upDateGameData] = useState(initialGameData)
     const [pKey, generatePKey] = useState("")
     const [searchKey, setSearchKey] = useState('')
-    sessionStorage.setItem('timeX', "20")
-    sessionStorage.setItem('timeO', "20")
+    sessionStorage.setItem('timeX', "300")
+    sessionStorage.setItem('timeO', "300")
     sessionStorage.setItem('Iron', "no")
     sessionStorage.setItem('Bomb', "no")
 
@@ -376,15 +376,15 @@ export default function Lobby() {
                         </div>
                     </div>
                     <div className="row mt-3 d-flex justify-content-center">
-                        <div className="col-6 p-0 pt-1">
+                        <div className="col-7 p-0 pt-1 col-md-6">
                             <TextField id="outlined-search" type="search"
                                        label="Join Room" className="w-100" onChange={joinChange}/>
                         </div>
-                        <div className="col-2 d-flex justify-content-center" onClick={handleJoin}>
+                        <div className="col-4 d-flex justify-content-center col-md-2 m-2" onClick={handleJoin}>
                             <BasicButtons title={'Join'}/>
                         </div>
-                        <div className="col-2 d-flex justify-content-center" onClick={handleCreate}>
-                            <BasicButtons title={'Create Room'}/>
+                        <div className="col-6 d-flex justify-content-center col-md-2 m-2" onClick={handleCreate}>
+                            <BasicButtons title={'Create'}/>
                         </div>
                     </div>
                 </div>

@@ -21,5 +21,6 @@ const LobbyWrapper = styled.div`
   .box{
     border: solid black 2px;
   }
+  
 `
 export default LobbyWrapper

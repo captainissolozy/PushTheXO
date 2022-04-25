@@ -48,13 +48,13 @@ const Navbar = () => {
                     <Bars {...getToggleProps()}/>
                     <div className="d-flex flex-end" {...getCollapseProps()}>
 
-                            {user ?
-                               <Button className="btn-no m-2" variant="text"
-                                                             onClick={handleUser}>{user.email}</Button> :
-                                <Button className="btn-no m-2"/>}
-                                <Link to={"/home"} className="navbar-brand text-white">
-                                    {user ? <LogoutBtn1 className="m-2"/> : <LoginBtn1 className="m-2" />}
-                                </Link>
+                        {user ?
+                            <Button className="btn-no m-2" variant="text"
+                                    onClick={handleUser}>{user.email}</Button> :
+                            <Button className="btn-no m-2"/>}
+                        <Link to={"/home"} className="navbar-brand text-white">
+                            {user ? <LogoutBtn1 className="m-2"/> : <LoginBtn1 className="m-2"/>}
+                        </Link>
 
                     </div>
                     <div className="d-flex btn-res">
@@ -90,7 +90,11 @@ const Navbar = () => {
                         <p> - Players alternate turns placing X or O on an empty box. X plays first.
                             The winner is the first player to form an unbroken chain of five XO horizontally,
                             vertically,
-                            or diagonally.</p>
+                            or diagonally.
+                        </p>
+                        <p> - Each Player have a limit of 5 minutes to place XO. If your time is out you lose by
+                            default.
+                        </p>
                         <h4 className="mx-3">IRONXO</h4>
                         <p> - IronXO are the pawn that can't be destroy by the Bomb. Player Can only place 1 IronXO</p>
                         <h4 className="mx-3">Bomb</h4>

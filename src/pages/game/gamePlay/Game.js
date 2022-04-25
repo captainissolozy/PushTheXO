@@ -76,12 +76,9 @@ const Game = () => {
                 if (gameData[el.target.id] === "" && sessionStorage.getItem('Iron') === "yes") {
                     await updateDoc(docRef, {[el.target.id]: "X", turn: gameData.turn + 1, ironX: el.target.id})
                     sessionStorage.setItem('Iron', "used")
-                    setTimeLeftX(20)
                     setDisableCancel(true)
                 } else if (gameData[el.target.id] === "") {
                     await updateDoc(docRef, {[el.target.id]: "X", turn: gameData.turn + 1})
-                    setTimeLeftX(20)
-                    console.log(sessionStorage.getItem('timeX'))
                 } else if (gameData[el.target.id] !== "X" && sessionStorage.getItem('Bomb') === "yes" && gameData.ironO !== el.target.id) {
                     sessionStorage.setItem('Bomb', "used")
                     await updateDoc(docRef, {[el.target.id]: ""})
@@ -94,11 +91,9 @@ const Game = () => {
                 if (gameData[el.target.id] === "" && sessionStorage.getItem('Iron') === "yes") {
                     await updateDoc(docRef, {[el.target.id]: "O", turn: gameData.turn + 1, ironO: el.target.id})
                     sessionStorage.setItem('Iron', "used")
-                    setTimeLeftO(20)
                     setDisableCancel(true)
                 } else if (gameData[el.target.id] === "") {
                     await updateDoc(docRef, {[el.target.id]: "O", turn: gameData.turn + 1})
-                    setTimeLeftO(20)
                 } else if (gameData[el.target.id] !== "O" && sessionStorage.getItem('Bomb') === "yes" && gameData.ironX !== el.target.id) {
                     sessionStorage.setItem('Bomb', "used")
                     await updateDoc(docRef, {[el.target.id]: ""})
@@ -116,12 +111,15 @@ const Game = () => {
                 if (gameData.turn % 2 === 0) {
                     if (timeLeftX > 0) {
                         setTimeLeftX(timeLeftX - 1);
-                        sessionStorage.setItem('timeX', (timeLeftX - 1).toString())
+                        sessionStorage.setItem('timeX', (timeLeftX-2).toString())
+                        console.log(sessionStorage.getItem('timeX'))
+                        console.log(timeLeftX)
                     }
-                    if (timeLeftX === 0){
+                    else if (timeLeftX === 0) {
+                        console.log(timeLeftX)
                         updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false})
-                        setTimeLeftO(20)
-                        setTimeLeftX(20)
+                        setTimeLeftO(300)
+                        setTimeLeftX(300)
                         toast.error('X Loses by Time Out!!', {toastId: 12});
                     }
 
@@ -130,7 +128,7 @@ const Game = () => {
         }, 1000);
 
         return () => clearTimeout(timer);
-    });
+    },[timeLeftX, gameData]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -138,12 +136,13 @@ const Game = () => {
                 if (gameData.turn % 2 === 1) {
                     if (timeLeftO > 0) {
                         setTimeLeftO(timeLeftO - 1);
-                        sessionStorage.setItem('timeO', (timeLeftO - 1).toString())
+                        sessionStorage.setItem('timeO', (timeLeftO-2).toString())
+
                     }
-                    if (timeLeftO === 0){
+                    else if (timeLeftO === 0) {
                         updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false})
-                        setTimeLeftO(20)
-                        setTimeLeftX(20)
+                        setTimeLeftO(300)
+                        setTimeLeftX(300)
                         toast.error('O Loses by Time Out!!', {toastId: 12});
                     }
                 }
@@ -151,7 +150,7 @@ const Game = () => {
         }, 1000);
 
         return () => clearTimeout(timer);
-    });
+    },[timeLeftO, gameData]);
 
     const handleClose = () => {
         setOpen(false)
@@ -187,8 +186,8 @@ const Game = () => {
 
     const handleGiveUp = async () => {
         if (gameData.gameState === true) {
-            setTimeLeftO(20)
-            setTimeLeftX(20)
+            setTimeLeftO(300)
+            setTimeLeftX(300)
             if (sessionStorage.getItem('email') === gameData.playerX) {
                 await updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false})
             } else if (sessionStorage.getItem('email') === gameData.playerY) {
@@ -204,6 +203,10 @@ const Game = () => {
                 updateDoc(docRef, {gameState: true})
                 resetBoard().then()
                 toast.success('Game Start', {toastId: 3});
+                sessionStorage.setItem('timeX', "300")
+                sessionStorage.setItem('timeO', "300")
+                setTimeLeftO(300)
+                setTimeLeftX(300)
             } else {
                 toast.error('Please Choose Your role first', {toastId: 3});
             }
@@ -218,8 +221,10 @@ const Game = () => {
         setDisableO(false)
         sessionStorage.setItem('Iron', "no")
         sessionStorage.setItem('Bomb', "no")
-        setTimeLeftO(20)
-        setTimeLeftX(20)
+        sessionStorage.setItem('timeX', "300")
+        sessionStorage.setItem('timeO', "300")
+        setTimeLeftO(300)
+        setTimeLeftX(300)
         if (winner === gameData.playerX) {
             const docRef0 = doc(db, 'UsersDetail', winner)
             updateDoc(docRef0, {Win: userXData.Win + 1})
@@ -288,8 +293,8 @@ const Game = () => {
                         && gameData[i] === gameData[i + 3] && gameData[i] === gameData[i + 4]) {
                         sessionStorage.setItem('Bomb', "no")
                         sessionStorage.setItem('Iron', "no")
-                        setTimeLeftO(20)
-                        setTimeLeftX(20)
+                        setTimeLeftO(300)
+                        setTimeLeftX(300)
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
                             gameData.gameState = false
@@ -304,8 +309,8 @@ const Game = () => {
                         && gameData[i] === gameData[i + 48] && gameData[i] === gameData[i + 64]) {
                         sessionStorage.setItem('Bomb', "no")
                         sessionStorage.setItem('Iron', "no")
-                        setTimeLeftO(20)
-                        setTimeLeftX(20)
+                        setTimeLeftO(300)
+                        setTimeLeftX(300)
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
                             gameData.gameState = false
@@ -320,8 +325,8 @@ const Game = () => {
                         && gameData[i] === gameData[i + 45] && gameData[i] === gameData[i + 60]) {
                         sessionStorage.setItem('Bomb', "no")
                         sessionStorage.setItem('Iron', "no")
-                        setTimeLeftO(20)
-                        setTimeLeftX(20)
+                        setTimeLeftO(300)
+                        setTimeLeftX(300)
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
                             gameData.gameState = false
@@ -336,8 +341,8 @@ const Game = () => {
                         && gameData[i] === gameData[i + 42] && gameData[i] === gameData[i + 56]) {
                         sessionStorage.setItem('Bomb', "no")
                         sessionStorage.setItem('Iron', "no")
-                        setTimeLeftO(20)
-                        setTimeLeftX(20)
+                        setTimeLeftO(300)
+                        setTimeLeftX(300)
                         if (turn === "X") {
                             updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false}).then()
                             gameData.gameState = false
@@ -370,9 +375,6 @@ const Game = () => {
         }
         if (lobbyData.WinState === true) {
             if (gameData.winX === winCon) {
-                console.log("why")
-                console.log(gameData.winX)
-                console.log(winCon)
                 updateDoc(docRef2, {WinState: false}).then()
                 lobbyData.WinState = false
                 winMatch(gameData.playerX)
@@ -450,45 +452,28 @@ const Game = () => {
                                                                                   onClick={handleTerminate}>Terminate
                     Game</Button></h2>
             </div>
-
-            <h4 className="text-center m-2">Turn : {turn}</h4>
+            <div className="col">
+                <h1 className="text-center text-danger text-bold">BO{gameData.winCon} {winX} : {winY}</h1>
+                {(sessionStorage.getItem('email') === gameData.playerX) ?
+                    <h4 className="text-center m-2">Time left: {timeLeftX} Turn : {turn}</h4> :
+                    <h4 className="text-center m-2">Time left: {timeLeftO} Turn : {turn}</h4>}
+            </div>
             <div className="container">
                 <div className="row justify-content-center r-join">
 
-                    <div className="col-3 x-join">
-                        <Button disabled={disableX} variant="contained" className="w-100 mb-3" onClick={joinX}>JOIN AS
-                            Player: X</Button>
+                    <div className="col-10 x-join">
+                        <Button variant="contained" className="w-100 mb-3" onClick={joinX}>X
+                            : {gameData.playerX}</Button>
+
                     </div>
-                    <div className="col-3 y-join">
-                        <Button disabled={disableO} variant="contained" className="w-100 mb-3" onClick={joinY}>JOIN AS
-                            Player: O</Button>
+                    <div className="col-10 y-join">
+                        <Button variant="contained" className="w-100 mb-3" onClick={joinY}>O
+                            : {gameData.playerY}</Button>
                     </div>
                 </div>
             </div>
             <div className="container-fluid">
                 <div className="row justify-content-center">
-                    <div className="col-2 user-content">
-                        <div className="winCon">
-                            <h1 className="text-center text-danger text-bold">Best of {gameData.winCon}</h1>
-                        </div>
-                        <div className="user-x">
-                            <h3 className="text-center">Player X: {winX}</h3>
-                            <p className="text-center mt-3">{gameData.playerX}</p>
-                            {(sessionStorage.getItem('email') === gameData.playerX) ?
-                                <h3 className="text-center mt-3 .text-danger">{timeLeftX}</h3> : <h3></h3>}
-                        </div>
-                        <div className="user-o">
-                            <h3 className="text-center">Player O: {winY}</h3>
-                            <p className="text-center mt-3">{gameData.playerY}</p>
-                            {(sessionStorage.getItem('email') === gameData.playerY) ?
-                                <h3 className="text-center mt-3 .text-danger">{timeLeftO}</h3> : <h3></h3>}
-                        </div>
-                        <div className="button-special d-flex justify-content-center">
-                            <Button disabled={disableCancel} variant="contained" color="error" className="start-style"
-                                    onClick={handleCancel}>cancel</Button>
-                        </div>
-                    </div>
-
                     <div className="col-6 d-flex justify-content-center">
                         <div>
                             <div className="game-container">
@@ -499,25 +484,24 @@ const Game = () => {
                         </div>
                     </div>
 
-                    <div className="col-2 mx-2">
-
-                    </div>
                 </div>
             </div>
-            <div className="d-flex justify-content-center mt-4 mb-2">
-                <Button disabled={disableIron} variant="outlined" className="mx-4 iron-style"
+            <div className="d-flex justify-content-center mt-3 mb-2">
+                <Button disabled={disableCancel} variant="contained" color="error" className="start-style mx-1"
+                        onClick={handleCancel}>cancel</Button>
+                <Button disabled={disableIron} variant="outlined" className="mx-1 iron-style"
                         onClick={handleIron}>IronXO</Button>
-                <Button disabled={disableBomb} variant="outlined" className="mx-4 bomb-style"
+                <Button disabled={disableBomb} variant="outlined" className="mx-1 bomb-style"
                         onClick={handleBomb}>Bomb</Button>
-                <Button variant="contained" color="error" className="mx-4 giveUp-style" onClick={() => {
+                <Button variant="contained" color="error" className="mx-1 giveUp-style" onClick={() => {
                     const confirmBox = window.confirm(
                         "Do you really want to give up?"
                     )
                     if (confirmBox === true) {
                         handleGiveUp().then()
                     }
-                }}>Give up</Button>
-                <Button variant="contained" className="mx-4 start-style" onClick={handleStart}>Start</Button>
+                }}>forfeit</Button>
+                <Button variant="contained" className="mx-1 start-style" onClick={handleStart}>Start</Button>
             </div>
 
             <ToastContainer limit={4} autoClose={700}/>
