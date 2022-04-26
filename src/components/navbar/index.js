@@ -31,7 +31,7 @@ const Navbar = () => {
 
     useEffect(() => {
         if (user) {
-            onSnapshot(doc(db, "UsersDetail", user.email), (snapshot) => {
+            onSnapshot(doc(db, "UsersDetail", sessionStorage.getItem('email')), (snapshot) => {
                 setUserInfo(snapshot.data())
             });
         }
@@ -50,7 +50,7 @@ const Navbar = () => {
 
                         {user ?
                             <Button className="btn-no m-2" variant="text"
-                                    onClick={handleUser}>{user.email}</Button> :
+                                    onClick={handleUser}>{sessionStorage.getItem('email')}</Button> :
                             <Button className="btn-no m-2"/>}
                         <Link to={"/home"} className="navbar-brand text-white">
                             {user ? <LogoutBtn1 className="m-2"/> : <LoginBtn1 className="m-2"/>}
@@ -58,7 +58,8 @@ const Navbar = () => {
 
                     </div>
                     <div className="d-flex btn-res">
-                        {user ? <Button className="btn-res" variant="text" onClick={handleUser}>{user.email}</Button> :
+                        {user ? <Button className="btn-res" variant="text"
+                                        onClick={handleUser}>{sessionStorage.getItem('email')}</Button> :
                             <Button className="btn-res"/>}
                         <Link to={"/home"} className="navbar-brand text-white">
                             {user ? <LogoutBtn className="btn-res"/> : <Loginbtn className="btn-res"/>}

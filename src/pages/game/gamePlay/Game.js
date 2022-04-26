@@ -112,11 +112,8 @@ const Game = () => {
                     if (timeLeftX > 0) {
                         setTimeLeftX(timeLeftX - 1);
                         sessionStorage.setItem('timeX', (timeLeftX-2).toString())
-                        console.log(sessionStorage.getItem('timeX'))
-                        console.log(timeLeftX)
                     }
                     else if (timeLeftX === 0) {
-                        console.log(timeLeftX)
                         updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false})
                         setTimeLeftO(300)
                         setTimeLeftX(300)

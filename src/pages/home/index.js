@@ -3,11 +3,14 @@ import HomeWrapper from "./HomeWrapper";
 import {useEffect} from "react";
 import {useUserContext} from "../../context/UserContexts";
 import { getAuth, signInAnonymously } from "firebase/auth";
+import {doc, setDoc} from "firebase/firestore";
+import db from "../../config/firebase-config";
 
 
 const Home = () => {
-  const {user} = useUserContext()
+
   const navigate = useNavigate()
+  const {user, setUser} = useUserContext()
 
   const btnArray = [
     {
@@ -20,7 +23,7 @@ const Home = () => {
     },
     {
       txt: "Guest",
-      path: "/lobby"
+      path: "/Lobby"
     }
   ];
 
@@ -29,6 +32,20 @@ const Home = () => {
       navigate('/lobby')
     }
   }, [navigate, user])
+  const handleClickGuest = (el) => {
+    if (el.target.text === "Guest"){
+      el.preventDefault()
+      const authentication = getAuth();
+      signInAnonymously(authentication).then((response) => {
+        const docRef = doc(db, "UsersDetail", response.user.uid);
+        setDoc(docRef, {email: response.user.uid, Win: 0, Loses: 0}).then()
+        sessionStorage.setItem('email', response.user.uid)
+        sessionStorage.setItem('User', JSON.stringify(response.user))
+        setUser({email: response.user.uid})
+        navigate('/lobby')
+      })
+    }
+  }
 
   if (user) return null
   return (
@@ -41,7 +58,7 @@ const Home = () => {
                 {btnArray.map(({ txt, path }) => (
                   <div className="row m-3" key={txt}>
                     <div className="col align-self-center m-3">
-                      <Link to={path} className="btn btn-dark home-btn">
+                      <Link to={path} className="btn btn-dark home-btn" onClick={handleClickGuest}>
                         {txt}
                       </Link>
                     </div>
