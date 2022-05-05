@@ -71,11 +71,19 @@ const Game = () => {
     }
 
     const handleXO = async (el) => {
+
+        if (gameData.ironO !== ''){
+            document.getElementById(gameData.ironO).classList.add('iron')
+        }
+        if (gameData.ironX !== ''){
+            document.getElementById(gameData.ironX).classList.add('iron')
+        }
         if (gameData.gameState === true) {
             if (gameData.turn % 2 === 0 && sessionStorage.getItem('email') === gameData.playerX) {
                 if (gameData[el.target.id] === "" && sessionStorage.getItem('Iron') === "yes") {
                     await updateDoc(docRef, {[el.target.id]: "X", turn: gameData.turn + 1, ironX: el.target.id})
                     sessionStorage.setItem('Iron', "used")
+
                     setDisableCancel(true)
                 } else if (gameData[el.target.id] === "") {
                     await updateDoc(docRef, {[el.target.id]: "X", turn: gameData.turn + 1})
@@ -91,6 +99,7 @@ const Game = () => {
                 if (gameData[el.target.id] === "" && sessionStorage.getItem('Iron') === "yes") {
                     await updateDoc(docRef, {[el.target.id]: "O", turn: gameData.turn + 1, ironO: el.target.id})
                     sessionStorage.setItem('Iron', "used")
+
                     setDisableCancel(true)
                 } else if (gameData[el.target.id] === "") {
                     await updateDoc(docRef, {[el.target.id]: "O", turn: gameData.turn + 1})
@@ -111,9 +120,8 @@ const Game = () => {
                 if (gameData.turn % 2 === 0) {
                     if (timeLeftX > 0) {
                         setTimeLeftX(timeLeftX - 1);
-                        sessionStorage.setItem('timeX', (timeLeftX-2).toString())
-                    }
-                    else if (timeLeftX === 0) {
+                        sessionStorage.setItem('timeX', (timeLeftX - 2).toString())
+                    } else if (timeLeftX === 0) {
                         updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false})
                         setTimeLeftO(300)
                         setTimeLeftX(300)
@@ -125,7 +133,7 @@ const Game = () => {
         }, 1000);
 
         return () => clearTimeout(timer);
-    },[timeLeftX, gameData]);
+    }, [timeLeftX, gameData]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -133,10 +141,9 @@ const Game = () => {
                 if (gameData.turn % 2 === 1) {
                     if (timeLeftO > 0) {
                         setTimeLeftO(timeLeftO - 1);
-                        sessionStorage.setItem('timeO', (timeLeftO-2).toString())
+                        sessionStorage.setItem('timeO', (timeLeftO - 2).toString())
 
-                    }
-                    else if (timeLeftO === 0) {
+                    } else if (timeLeftO === 0) {
                         updateDoc(docRef, {turn: 0, winX: gameData.winX + 1, gameState: false})
                         setTimeLeftO(300)
                         setTimeLeftX(300)
@@ -147,7 +154,7 @@ const Game = () => {
         }, 1000);
 
         return () => clearTimeout(timer);
-    },[timeLeftO, gameData]);
+    }, [timeLeftO, gameData]);
 
     const handleClose = () => {
         setOpen(false)
@@ -175,6 +182,10 @@ const Game = () => {
 
     }
     const resetBoard = async () => {
+        setDisableIron(false)
+        setDisableBomb(false)
+        sessionStorage.setItem('Bomb', "no")
+        sessionStorage.setItem('Iron', "no")
         const initialBoard = Object.keys(gameData).filter((key) => {
             return !isNaN(key);
         })
@@ -185,6 +196,10 @@ const Game = () => {
         if (gameData.gameState === true) {
             setTimeLeftO(300)
             setTimeLeftX(300)
+            setDisableIron(false)
+            setDisableBomb(false)
+            sessionStorage.setItem('Bomb', "no")
+            sessionStorage.setItem('Iron', "no")
             if (sessionStorage.getItem('email') === gameData.playerX) {
                 await updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false})
             } else if (sessionStorage.getItem('email') === gameData.playerY) {
@@ -197,13 +212,17 @@ const Game = () => {
     const handleStart = () => {
         if (sessionStorage.getItem('email') === gameData.playerX) {
             if (gameData.playerX !== "" && gameData.playerY !== "" && gameData.gameState !== true) {
-                updateDoc(docRef, {gameState: true})
+                updateDoc(docRef, {gameState: true, ironO: '', ironX: ''})
                 resetBoard().then()
                 toast.success('Game Start', {toastId: 3});
                 sessionStorage.setItem('timeX', "300")
                 sessionStorage.setItem('timeO', "300")
                 setTimeLeftO(300)
                 setTimeLeftX(300)
+                setDisableIron(false)
+                setDisableBomb(false)
+                sessionStorage.setItem('Bomb', "no")
+                sessionStorage.setItem('Iron', "no")
             } else {
                 toast.error('Please Choose Your role first', {toastId: 3});
             }
@@ -283,7 +302,9 @@ const Game = () => {
             setDisableX(false)
             setDisableO(false)
         }
+
         if (gameData.gameState === true && gameData.turn >= 8) {
+
             for (let i = 1; i <= 225; i++) {
                 if (gameData[i] !== "") {
                     if (gameData[i] === gameData[i + 1] && gameData[i] === gameData[i + 2]
@@ -301,6 +322,12 @@ const Game = () => {
                             gameData.gameState = false
                             toast.success('O win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         }
+                        if (gameData.ironX !== ''){
+                            document.getElementById(gameData.ironX).classList.remove('iron')
+                        }
+                        if (gameData.ironO !== ''){
+                            document.getElementById(gameData.ironO).classList.remove('iron')
+                        }
                     }
                     if (gameData[i] === gameData[i + 16] && gameData[i] === gameData[i + 32]
                         && gameData[i] === gameData[i + 48] && gameData[i] === gameData[i + 64]) {
@@ -316,6 +343,12 @@ const Game = () => {
                             updateDoc(docRef, {turn: 0, winY: gameData.winY + 1, gameState: false}).then()
                             gameData.gameState = false
                             toast.success('O win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
+                        }
+                        if (gameData.ironX !== ''){
+                            document.getElementById(gameData.ironX).classList.remove('iron')
+                        }
+                        if (gameData.ironO !== ''){
+                            document.getElementById(gameData.ironO).classList.remove('iron')
                         }
                     }
                     if (gameData[i] === gameData[i + 15] && gameData[i] === gameData[i + 30]
@@ -333,6 +366,12 @@ const Game = () => {
                             gameData.gameState = false
                             toast.success('O win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         }
+                        if (gameData.ironX !== ''){
+                            document.getElementById(gameData.ironX).classList.remove('iron')
+                        }
+                        if (gameData.ironO !== ''){
+                            document.getElementById(gameData.ironO).classList.remove('iron')
+                        }
                     }
                     if (gameData[i] === gameData[i + 14] && gameData[i] === gameData[i + 28]
                         && gameData[i] === gameData[i + 42] && gameData[i] === gameData[i + 56]) {
@@ -349,6 +388,12 @@ const Game = () => {
                             gameData.gameState = false
                             toast.success('O win', {position: toast.POSITION.TOP_CENTER, toastId: 1});
                         }
+                        if (gameData.ironX !== ''){
+                            document.getElementById(gameData.ironX).classList.remove('iron')
+                        }
+                        if (gameData.ironO !== ''){
+                            document.getElementById(gameData.ironO).classList.remove('iron')
+                        }
                     }
                 }
             }
@@ -357,9 +402,21 @@ const Game = () => {
             if (gameData.winX === winCon && gameData.playerX === sessionStorage.getItem('email')) {
                 setOpen(true)
                 setModal("You Win!!")
+                if (gameData.ironX !== ''){
+                    document.getElementById(gameData.ironX).classList.remove('iron')
+                }
+                if (gameData.ironO !== ''){
+                    document.getElementById(gameData.ironO).classList.remove('iron')
+                }
             } else if (gameData.winX === winCon && gameData.playerX !== sessionStorage.getItem('email')) {
                 setOpen(true)
                 setModal("You Loses!!")
+                if (gameData.ironX !== ''){
+                    document.getElementById(gameData.ironX).classList.remove('iron')
+                }
+                if (gameData.ironO !== ''){
+                    document.getElementById(gameData.ironO).classList.remove('iron')
+                }
             }
             if (gameData.winY === winCon && gameData.playerY === sessionStorage.getItem('email')) {
                 setOpen(true)
@@ -367,6 +424,12 @@ const Game = () => {
             } else if (gameData.winY === winCon && gameData.playerY !== sessionStorage.getItem('email')) {
                 setOpen(true)
                 setModal("You Loses!!")
+                if (gameData.ironX !== ''){
+                    document.getElementById(gameData.ironX).classList.remove('iron')
+                }
+                if (gameData.ironO !== ''){
+                    document.getElementById(gameData.ironO).classList.remove('iron')
+                }
             }
 
         }
@@ -398,6 +461,7 @@ const Game = () => {
         if (sessionStorage.getItem('Iron') === "yes" || sessionStorage.getItem('Bomb') === "yes") {
             setDisableCancel(false)
         }
+
 
     }, [gameData])
 
@@ -449,12 +513,6 @@ const Game = () => {
                                                                                   onClick={handleTerminate}>Terminate
                     Game</Button></h2>
             </div>
-            <div className="col">
-                <h1 className="text-center text-danger text-bold">BO{gameData.winCon} {winX} : {winY}</h1>
-                {(sessionStorage.getItem('email') === gameData.playerX) ?
-                    <h4 className="text-center m-2">Time left: {timeLeftX} Turn : {turn}</h4> :
-                    <h4 className="text-center m-2">Time left: {timeLeftO} Turn : {turn}</h4>}
-            </div>
             <div className="container">
                 <div className="row justify-content-center r-join">
 
@@ -468,6 +526,12 @@ const Game = () => {
                             : {gameData.playerY}</Button>
                     </div>
                 </div>
+            </div>
+            <div className="col">
+                <h1 className="text-center text-danger text-bold">BO{gameData.winCon} {winX} : {winY}</h1>
+                {(sessionStorage.getItem('email') === gameData.playerX) ?
+                    <h4 className="text-center m-2">Time left: {timeLeftX} Turn : {turn}</h4> :
+                    <h4 className="text-center m-2">Time left: {timeLeftO} Turn : {turn}</h4>}
             </div>
             <div className="container-fluid">
                 <div className="row justify-content-center">
